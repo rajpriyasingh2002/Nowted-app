@@ -1,8 +1,34 @@
 import { useEffect, useRef, useState } from "react";
 
-const NotesView = () => {
+type Folder = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+};
+
+type Note = {
+  id: string;
+  folderId: string;
+  title: string;
+  content: string;
+  isFavorite: boolean;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+  folder: Folder;
+};
+type NotesViewProps = {
+  note: Note;
+};
+
+const NotesView: React.FC<NotesViewProps> = ({ note }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const date = new Date(Date.parse(note.createdAt));
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -18,11 +44,9 @@ const NotesView = () => {
   }, []);
 
   return (
-    <div className="w-[60%] bg-transparent flex flex-col pt-14 pb-14 p-12 gap-8">
+    <div className="flex flex-col gap-8 w-full">
       <div className="flex items-center justify-between relative">
-        <h1 className="text-white text-3xl font-semibold">
-          Reflection on the Month of June
-        </h1>
+        <h1 className="text-white text-3xl font-semibold">{note.title}</h1>
         <div className="relative" ref={dropdownRef}>
           <img
             className="cursor-pointer"
@@ -65,65 +89,19 @@ const NotesView = () => {
         <div className="flex gap-5 border-b-2 border-[#FFFFFF1A] pl-0 p-3">
           <img src="./public/assets/Calender-Icon.svg" alt="calender" />
           <p className="text-[#FFFFFF99] pr-10">Date</p>
-          <p className="text-white">21/06/2022</p>
+          <p className="text-white">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
         </div>
         <div className="flex gap-5 pl-0 p-3">
-          <img src="./public/assets/Calender-Icon.svg" alt="calender" />
-          <p className="text-[#FFFFFF99] pr-10">Date</p>
-          <p className="text-white">21/06/2022</p>
+          <img src="./public/assets/Folder-Icon.svg" alt="calender" />
+          <p className="text-[#FFFFFF99] pr-10">Folder</p>
+          <p className="text-white">{note.folder.name}</p>
         </div>
       </div>
       <div>
-        <p className="text-white">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
-          vero iusto mollitia consectetur architecto numquam ab, sit fugiat aut
-          in ad commodi ratione ex consequatur expedita, id quasi cumque
-          veritatis?
-          <br />
-          <br />
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. A porro
-          labore libero eius tempora tenetur, eos, suscipit, eum in harum dolor
-          ex minus natus? Tenetur voluptatum deserunt soluta nihil praesentium.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, libero
-          quis quasi reiciendis quod voluptatibus aspernatur obcaecati repellat
-          vero iusto nulla quae repudiandae? Ipsa totam unde possimus! Itaque,
-          accusantium maiores?
-          <br />
-          <br />
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque
-          corrupti amet quam reprehenderit, sed adipisci soluta error voluptatem
-          debitis praesentium voluptatum consequatur enim quos rem iusto sit
-          incidunt, et possimus! Lorem ipsum dolor, sit amet consectetur
-          adipisicing elit. Nobis aperiam voluptatem fugit, alias laboriosam,
-          earum iusto, molestiae est tempora atque itaque soluta. Similique,
-          porro dolor quam corrupti ducimus tempora rem.
-          <br />
-          <br />
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. A porro
-          labore libero eius tempora tenetur, eos, suscipit, eum in harum dolor
-          ex minus natus? Tenetur voluptatum deserunt soluta nihil praesentium.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, libero
-          quis quasi reiciendis quod voluptatibus aspernatur obcaecati repellat
-          vero iusto nulla quae repudiandae? Ipsa totam unde possimus! Itaque,
-          accusantium maiores? Lorem ipsum dolor sit amet, consectetur
-          adipisicing elit. Quaerat voluptates ad maxime sint voluptate vel
-          reiciendis, unde accusamus atque voluptatem eveniet possimus debitis,
-          cumque amet id sapiente commodi praesentium assumenda! Lorem ipsum,
-          dolor sit amet consectetur adipisicing elit. Aliquid nihil aut dolor
-          totam et? Commodi ipsum quo perferendis eius nulla nostrum, quam,
-          libero itaque harum nihil possimus accusantium nam suscipit!
-          <br />
-          <br />
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque
-          corrupti amet quam reprehenderit, sed adipisci soluta error voluptatem
-          debitis praesentium voluptatum consequatur enim quos rem iusto sit
-          incidunt, et possimus! Lorem ipsum dolor, sit amet consectetur
-          adipisicing elit. Nobis aperiam voluptatem fugit, alias laboriosam,
-          earum iusto, molestiae est tempora atque itaque soluta. Similique,
-          porro dolor quam corrupti ducimus tempora rem.
-        </p>
+        <p className="text-white">{note.content}</p>
       </div>
     </div>
   );
 };
+
 export default NotesView;

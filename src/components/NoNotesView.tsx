@@ -1,7 +1,7 @@
 const NoNotesView = () => {
   return (
-    <div className="w-[60%] bg-transparent flex flex-col h-full items-center justify-center">
-      <div className="flex flex-col items-center justify-center gap-4 w-[50%]">
+    <div className="flex flex-col h-[50%] items-center justify-center w-[50%]">
+      <div className="flex flex-col items-center justify-center gap-4">
         <img src="./public/assets/Page-Large-Icon.svg" alt="page" />
         <h2 className="text-white text-3xl text-center font-semibold">
           Select a note to view

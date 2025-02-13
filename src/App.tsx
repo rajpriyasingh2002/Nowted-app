@@ -1,20 +1,21 @@
-// import DeletedNoteView from "./components/DeletedNoteView";
+import { ApiProvider } from "./components/APIContext";
 import FolderView from "./components/FolderView";
 import MainComponent from "./components/MainComponent";
-// import NoNotesView from "./components/NoNotesView";
-import NotesView from "./components/NotesView";
 import SideBarView from "./components/SideBarView";
+import DisplayNotes from "./components/DisplayNotes";
+import CustomContextMenu from "./components/CustomContextMenu";
 
 function App() {
   return (
     <>
-      <MainComponent>
-        <SideBarView />
-        <FolderView />
-        <NotesView />
-        {/* <NoNotesView /> */}
-        {/* <DeletedNoteView /> */}
-      </MainComponent>
+      <ApiProvider>
+        <MainComponent>
+          <SideBarView />
+          <FolderView />
+          <DisplayNotes />
+        </MainComponent>
+      </ApiProvider>
+      {/* <CustomContextMenu /> */}
     </>
   );
 }
