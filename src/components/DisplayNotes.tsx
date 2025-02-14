@@ -1,7 +1,6 @@
 import { useApi } from "./APIContext";
 import NotesView from "./NotesView";
 import NoNotesView from "./NoNotesView";
-import DeletedNoteView from "./DeletedNoteView";
 
 const DisplayNotes = () => {
   const { note } = useApi();

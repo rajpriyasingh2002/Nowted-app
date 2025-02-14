@@ -3,7 +3,6 @@ import FolderView from "./components/FolderView";
 import MainComponent from "./components/MainComponent";
 import SideBarView from "./components/SideBarView";
 import DisplayNotes from "./components/DisplayNotes";
-import CustomContextMenu from "./components/CustomContextMenu";
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
           <DisplayNotes />
         </MainComponent>
       </ApiProvider>
-      {/* <CustomContextMenu /> */}
     </>
   );
 }

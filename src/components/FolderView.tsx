@@ -2,14 +2,19 @@ import { useState } from "react";
 import { useApi } from "./APIContext";
 
 const FolderView = () => {
-  const { notesPreview, getNote } = useApi();
+  const { notesPreview, getNote, recentNote, addRecentNote } = useApi();
 
   const folderName = Object.keys(notesPreview)[0];
 
   const [selectedNotesId, setSelectedNotesId] = useState<string | null>(null);
   function handleNotesOnClick(id: string) {
+    addRecentNote(null);
     getNote(id);
     setSelectedNotesId(id);
+  }
+
+  if (recentNote) {
+    getNote(recentNote.id);
   }
 
   return (
@@ -17,13 +22,17 @@ const FolderView = () => {
       <h1 className="text-white text-2xl font-semibold">{folderName}</h1>
       <div className="flex flex-col gap-4">
         {notesPreview[folderName].map((item) => {
+          const isHighlighted =
+            selectedNotesId === item.id ||
+            (recentNote?.id === item.id && !selectedNotesId);
+
           const date = new Date(Date.parse(item.createdAt));
           return (
             <div
               onClick={() => handleNotesOnClick(item.id)}
               key={item.id}
               className={`${
-                selectedNotesId === item.id
+                isHighlighted
                   ? "bg-[#FFFFFF1A]"
                   : "bg-[#FFFFFF08] hover:bg-[#FFFFFF1A]"
               } pt-5 p-4 flex flex-col gap-3`}
@@ -38,25 +47,6 @@ const FolderView = () => {
             </div>
           );
         })}
-
-        {/* <div className="bg-[#FFFFFF08] hover:bg-[#FFFFFF1A] pt-5 p-4 flex flex-col gap-3">
-          <h1 className="text-white text-lg font-semibold">
-            My Goals for the next year
-          </h1>
-          <div className="flex gap-2">
-            <p className="text-[#FFFFFF66]">31/01/2022</p>
-            <p className="text-[#FFFFFF99]">As the year comes to a...</p>
-          </div>
-        </div>
-        <div className="bg-[#FFFFFF1A] pt-5 p-4 flex flex-col gap-3">
-          <h1 className="text-white text-lg font-semibold">
-            My Goals for the next year
-          </h1>
-          <div className="flex gap-2">
-            <p className="text-[#FFFFFF66]">31/01/2022</p>
-            <p className="text-[#FFFFFF99]">As the year comes to a...</p>
-          </div>
-        </div> */}
       </div>
     </div>
   );

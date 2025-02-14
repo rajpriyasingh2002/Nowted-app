@@ -1,14 +1,55 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useApi } from "./APIContext";
-import { Folder } from "./TypesConfigration";
+import { Folder, RecentNotesPreview } from "./TypesConfigration";
+import FoldersComponent from "./FoldersComponent";
 
 const SideBarView = () => {
-  const { folders, recentNotes, error, addFolder, getNotes } = useApi();
+  const {
+    folders,
+    recentNotes,
+    recentNote,
+    addRecentNote,
+    addFolder,
+    getNotes,
+  } = useApi();
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [folderButton, setFolderButton] = useState(false);
+  const [newFolder, setNewFolder] = useState("New Folder");
+  const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
+    null
+  );
+
+  function handleRecentNotesButton(recentNote: RecentNotesPreview) {
+    setSelecetdRecentNotes(recentNote.id);
+    setSelectedFolderId(null);
+    addRecentNote(recentNote);
+    getNotes(recentNote.folder);
+  }
 
   function handleFoldersButton(folder: Folder) {
     getNotes(folder);
     setSelectedFolderId(folder.id);
+    setSelecetdRecentNotes(null);
+    addRecentNote(null);
+  }
+
+  const handleFolderClickButton = () => {
+    setFolderButton((prev) => !prev);
+  };
+
+  function handleNewFolder(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setNewFolder(e.target.value);
+    console.log(newFolder);
+  }
+
+  function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    addFolder(newFolder);
+
+    setNewFolder("New Folder");
+    setFolderButton(false);
   }
 
   return (
@@ -36,7 +77,15 @@ const SideBarView = () => {
         <div className="flex flex-col gap-1">
           {recentNotes.map((item) => {
             return (
-              <button key={item.id} className="cursor-auto hover:bg-[#312EB5]">
+              <button
+                key={item.id}
+                className={`cursor-auto" ${
+                  selectedRecentNotes === item.id
+                    ? "bg-[#312EB5]"
+                    : "hover:bg-[#312EB5]"
+                } `}
+                onClick={() => handleRecentNotesButton(item)}
+              >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
                   <img
                     src="./public/assets/Selected-Page-Icon.svg"
@@ -49,32 +98,18 @@ const SideBarView = () => {
           })}
         </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex pl-4 pr-4 justify-between items-center">
-          <h1 className="text-[#FFFFFF99]">Folders</h1>
-          <img src="./public/assets/Add-Folder-Icon.svg" alt="" />
-        </div>
-        <div className="flex flex-col gap-1">
-          {folders.map((item) => {
-            return (
-              <button
-                key={item.id}
-                className={`cursor-auto" ${
-                  selectedFolderId === item.id
-                    ? "bg-[#FFFFFF08]"
-                    : "hover:bg-[#FFFFFF08]"
-                } `}
-                onClick={() => handleFoldersButton(item)}
-              >
-                <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-                  <img src="./public/assets/Folder-Icon.svg" alt="folder" />
-                  <h1 className="text-[#FFFFFF99]">{item.name}</h1>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FoldersComponent
+        handleFolderClickButton={handleFolderClickButton}
+        folderButton={folderButton}
+        handleOnSubmit={handleOnSubmit}
+        newFolder={newFolder}
+        handleNewFolder={handleNewFolder}
+        folders={folders}
+        selectedFolderId={selectedFolderId}
+        handleFoldersButton={handleFoldersButton}
+        recentNote={recentNote}
+        addRecentNote={addRecentNote}
+      />
       <div className="flex flex-col gap-2">
         <h1 className="text-[#FFFFFF99] inline pl-4">More</h1>
         <div className="flex flex-col gap-1">

@@ -46,3 +46,16 @@ export type Note = {
   deletedAt: string;
   folder: Folder;
 };
+
+export type FoldersComponentView = {
+  folders: Folder[];
+  handleFoldersButton: (folder: Folder) => void;
+  handleFolderClickButton: () => void;
+  folderButton: boolean;
+  handleOnSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  newFolder: string;
+  handleNewFolder: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedFolderId: string | null;
+  recentNote: RecentNotesPreview | null;
+  addRecentNote: (recentNote: RecentNotesPreview) => void;
+};
