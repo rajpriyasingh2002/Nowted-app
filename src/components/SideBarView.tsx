@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApi } from "./APIContext";
 import { Folder, RecentNotesPreview } from "./TypesConfigration";
 import FoldersComponent from "./FoldersComponent";
@@ -8,11 +8,12 @@ const SideBarView = () => {
     folders,
     recentNotes,
     recentNote,
+    selectedFolderId,
     addRecentNote,
     addFolder,
     getNotes,
+    setSelectedFolderId,
   } = useApi();
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [folderButton, setFolderButton] = useState(false);
   const [newFolder, setNewFolder] = useState("New Folder");
   const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
@@ -21,7 +22,7 @@ const SideBarView = () => {
 
   function handleRecentNotesButton(recentNote: RecentNotesPreview) {
     setSelecetdRecentNotes(recentNote.id);
-    setSelectedFolderId(null);
+    setSelectedFolderId(recentNote.folderId);
     addRecentNote(recentNote);
     getNotes(recentNote.folder);
   }
@@ -52,8 +53,15 @@ const SideBarView = () => {
     setFolderButton(false);
   }
 
+  //this should also go with recent note component later
+  useEffect(() => {
+    if (!recentNote) {
+      setSelecetdRecentNotes(null);
+    }
+  }, [recentNote]);
+
   return (
-    <nav className="w-[20%] bg-transparent flex flex-col pt-6 gap-10 h-full">
+    <nav className="w-[20%] bg-transparent flex flex-col pt-6 gap-10 h-screen">
       <div className="flex justify-between pl-4 pr-4">
         <img
           className="cursor-auto"

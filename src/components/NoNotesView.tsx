@@ -1,6 +1,6 @@
 const NoNotesView = () => {
   return (
-    <div className="flex flex-col h-[50%] items-center justify-center w-[50%]">
+    <div className="flex flex-col items-center justify-center w-[50%]">
       <div className="flex flex-col items-center justify-center gap-4">
         <img src="./public/assets/Page-Large-Icon.svg" alt="page" />
         <h2 className="text-white text-3xl text-center font-semibold">

@@ -12,7 +12,7 @@ const FoldersComponent: React.FC<FoldersComponentView> = ({
   recentNote,
 }) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex-1 flex-col gap-2">
       <div className="flex pl-4 pr-4 justify-between items-center">
         <h1 className="text-[#FFFFFF99]">Folders</h1>
         <img
@@ -21,7 +21,7 @@ const FoldersComponent: React.FC<FoldersComponentView> = ({
           alt=""
         />
       </div>
-      <div className="flex flex-col gap-1 max-h-[200px] overflow-y-scroll">
+      <div className="flex flex-col gap-1 max-h-50 overflow-y-scroll">
         {folderButton && (
           <form
             onSubmit={handleOnSubmit}

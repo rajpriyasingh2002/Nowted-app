@@ -14,11 +14,13 @@ interface ApiContextType {
   recentNotes: RecentNotesPreview[];
   recentNote: RecentNotesPreview | null;
   error: string | null;
+  selectedFolderId: string | null;
   addFolder: (folderName: string) => Promise<void>;
   //   addNotes: (notes: Notes) => Promise<void>;
   getNotes: (folder: Folder) => Promise<void>;
   getNote: (noteId: string) => Promise<void>;
   addRecentNote: (recentNote: RecentNotesPreview | null) => void;
+  setSelectedFolderId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -34,6 +36,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const [recentNotes, setRecentNotes] = useState<RecentNotesPreview[]>([]);
   const [recentNote, setRecentNote] = useState<RecentNotesPreview | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
   useEffect(() => {
     AxiosApi.get("/folders")
@@ -116,6 +119,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         getNotes,
         getNote,
         addRecentNote,
+        selectedFolderId,
+        setSelectedFolderId,
       }}
     >
       {children}
