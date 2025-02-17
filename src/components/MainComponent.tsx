@@ -1,9 +1,15 @@
-import { ReactNode } from "react";
+import SideBarView from "./SideBarView";
+import FolderView from "./FolderView";
+import DisplayNotes from "./DisplayNotes";
 
-const MainComponent = ({ children }: { children: ReactNode }) => {
+const MainComponent = () => {
   return (
     <>
-      <div className="bg-[#181818] flex h-screen">{children}</div>
+      <div className="bg-[#181818] flex h-screen">
+        <SideBarView />
+        <FolderView />
+        <DisplayNotes />
+      </div>
     </>
   );
 };

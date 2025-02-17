@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useApi } from "./APIContext";
 
 type Folder = {
   id: string;
@@ -22,11 +23,15 @@ type Note = {
 };
 type NotesViewProps = {
   note: Note;
+  onDeleteHandler: (noteid: string) => void;
 };
 
-const NotesView: React.FC<NotesViewProps> = ({ note }) => {
+const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
+  const { setNotesFavourites, setNotesArchived, getNotes } = useApi();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [favorite, setFavorite] = useState<boolean>(note.isFavorite);
+  const [archive, setArchive] = useState<boolean>(note.isArchived);
 
   const date = new Date(Date.parse(note.createdAt));
 
@@ -43,6 +48,20 @@ const NotesView: React.FC<NotesViewProps> = ({ note }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    setNotesFavourites(favorite, note.id);
+    setNotesArchived(archive, note.id);
+    getNotes(note.folder);
+  }, [favorite, archive]);
+
+  function handleFavouriteButton() {
+    setFavorite((prev) => !prev);
+  }
+
+  function onArchiveHandler() {
+    setArchive((prev) => !prev);
+  }
+
   return (
     <div className="flex flex-col gap-8 w-full">
       <div className="flex items-center justify-between relative">
@@ -56,29 +75,44 @@ const NotesView: React.FC<NotesViewProps> = ({ note }) => {
           />
 
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-[#333333] rounded-md shadow-lg p-2">
+            <div className="absolute right-0 mt-2 w-70 bg-[#333333] rounded-md shadow-lg p-2">
               <ul className="py-1 text-white">
-                <li className="px-4 py-2 cursor-pointer flex gap-3">
-                  <img
-                    src="./public/assets/Favourites-Bright-Icon.svg"
-                    alt="favourites"
-                  />{" "}
-                  Add to Favourites
+                <li className="px-4 py-2">
+                  <button
+                    onClick={() => handleFavouriteButton()}
+                    className="flex gap-3 cursor-pointer"
+                  >
+                    <img
+                      src="./public/assets/Favourites-Bright-Icon.svg"
+                      alt="favourites"
+                    />{" "}
+                    {favorite ? "Remove from Favorites" : "Add to Favorites"}
+                  </button>
                 </li>
-                <li className="px-4 py-2 cursor-pointer flex gap-3 pb-5">
-                  <img
-                    src="./public/assets/Archive-Bright-Icon.svg"
-                    alt="archive"
-                  />{" "}
-                  Archive
+                <li className="px-4 py-2 pb-5">
+                  <button
+                    onClick={() => onArchiveHandler()}
+                    className="flex gap-3 cursor-pointer"
+                  >
+                    <img
+                      src="./public/assets/Archive-Bright-Icon.svg"
+                      alt="archive"
+                    />{" "}
+                    {archive ? "Remove from Archive" : "Archive"}
+                  </button>
                 </li>
                 <li className="px-4 py-2 border-t-2 border-[#FFFFFF0D] gap-3"></li>
-                <li className="px-4 py-2 cursor-pointer flex gap-3">
-                  <img
-                    src="./public/assets/Trash-Bright-Icon.svg"
-                    alt="delete"
-                  />{" "}
-                  Delete
+                <li className="px-4 py-2 ">
+                  <button
+                    onClick={() => onDeleteHandler(note.id)}
+                    className="flex gap-3 cursor-pointer"
+                  >
+                    <img
+                      src="./public/assets/Trash-Bright-Icon.svg"
+                      alt="delete"
+                    />{" "}
+                    Delete
+                  </button>
                 </li>
               </ul>
             </div>

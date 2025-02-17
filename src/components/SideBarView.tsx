@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useApi } from "./APIContext";
 import { Folder, RecentNotesPreview } from "./TypesConfigration";
 import FoldersComponent from "./FoldersComponent";
+import RecentNoteComponent from "./RecentNoteComponent";
+import NewNoteComponent from "./NewNoteComponent";
+import { FavoritesComponent } from "./FavoritesComponent";
+import { TrashComponent } from "./TrashComponent";
+import { ArchivedComponent } from "./ArchivedComponent";
+import { useNavigate } from "react-router-dom";
 
 const SideBarView = () => {
   const {
@@ -9,22 +15,28 @@ const SideBarView = () => {
     recentNotes,
     recentNote,
     selectedFolderId,
+    searchText,
+    search,
     addRecentNote,
     addFolder,
     getNotes,
     setSelectedFolderId,
+    setSearchText,
+    setSearch,
   } = useApi();
   const [folderButton, setFolderButton] = useState(false);
   const [newFolder, setNewFolder] = useState("New Folder");
   const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
     null
   );
+  const navigate = useNavigate();
 
   function handleRecentNotesButton(recentNote: RecentNotesPreview) {
     setSelecetdRecentNotes(recentNote.id);
     setSelectedFolderId(recentNote.folderId);
     addRecentNote(recentNote);
     getNotes(recentNote.folder);
+    // navigate(`/recents/${recentNote.id}`);
   }
 
   function handleFoldersButton(folder: Folder) {
@@ -32,6 +44,7 @@ const SideBarView = () => {
     setSelectedFolderId(folder.id);
     setSelecetdRecentNotes(null);
     addRecentNote(null);
+    // navigate(`/folders/${folder.id}`);
   }
 
   const handleFolderClickButton = () => {
@@ -52,13 +65,9 @@ const SideBarView = () => {
     setNewFolder("New Folder");
     setFolderButton(false);
   }
-
-  //this should also go with recent note component later
-  useEffect(() => {
-    if (!recentNote) {
-      setSelecetdRecentNotes(null);
-    }
-  }, [recentNote]);
+  function onSearchTextHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearchText(e.target.value);
+  }
 
   return (
     <nav className="w-[20%] bg-transparent flex flex-col pt-6 gap-10 h-screen">
@@ -68,44 +77,43 @@ const SideBarView = () => {
           src="./public/assets/Nowted-Logo.svg"
           alt="Nowted.svg"
         />
-        <img
-          className="cursor-auto"
-          src="./public/assets/Search-Icon.svg"
-          alt="search"
-        />
-      </div>
-      <div className="text-white flex items-center justify-center">
-        <button className="flex items-center gap-2 justify-center bg-[#FFFFFF0D] w-[90%] h-10 rounded-sm cursor-pointer">
-          <img src="./public/assets/Plus-Icon.svg" alt="add" />
-          New Note
+        <button
+          className="cursor-pointer"
+          onClick={() => setSearch((prev) => !prev)}
+        >
+          {search ? (
+            <img src="./public/assets/Search-Highlighted.svg" alt="search" />
+          ) : (
+            <img src="./public/assets/Search-Icon.svg" alt="search" />
+          )}
         </button>
       </div>
-      <div className="flex flex-col gap-2">
-        <h3 className="text-[#FFFFFF99] inline pl-4">Recents</h3>
-        <div className="flex flex-col gap-1">
-          {recentNotes.map((item) => {
-            return (
-              <button
-                key={item.id}
-                className={`cursor-auto" ${
-                  selectedRecentNotes === item.id
-                    ? "bg-[#312EB5]"
-                    : "hover:bg-[#312EB5]"
-                } `}
-                onClick={() => handleRecentNotesButton(item)}
-              >
-                <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-                  <img
-                    src="./public/assets/Selected-Page-Icon.svg"
-                    alt="file"
-                  />
-                  <h1 className="text-white">{item.title}</h1>
-                </div>
-              </button>
-            );
-          })}
+      {search ? (
+        <div className="flex items-center justify-center pl-4 pr-4">
+          <img
+            className="p-3 bg-[#FFFFFF0D] h-full rounded-s-md"
+            src="./public/assets/Search-Input.svg"
+            alt="..."
+          />
+          <input
+            className="w-[90%] h-full outline-none text-white rounded-e-md bg-[#FFFFFF0D] p-3"
+            type="text"
+            placeholder="SearchNote"
+            value={searchText}
+            onChange={(e) => onSearchTextHandler(e)}
+          />
         </div>
-      </div>
+      ) : (
+        <NewNoteComponent />
+      )}
+
+      <RecentNoteComponent
+        recentNotes={recentNotes}
+        selectedRecentNotes={selectedRecentNotes}
+        handleRecentNotesButton={handleRecentNotesButton}
+        recentNote={recentNote}
+        setSelecetdRecentNotes={setSelecetdRecentNotes}
+      />
       <FoldersComponent
         handleFolderClickButton={handleFolderClickButton}
         folderButton={folderButton}
@@ -121,24 +129,9 @@ const SideBarView = () => {
       <div className="flex flex-col gap-2">
         <h1 className="text-[#FFFFFF99] inline pl-4">More</h1>
         <div className="flex flex-col gap-1">
-          <button className="cursor-auto hover:bg-[#FFFFFF08]">
-            <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-              <img src="./public/assets/Favourites-Icon.svg" alt="favourites" />
-              <h1 className="text-[#FFFFFF99]">Favorites</h1>
-            </div>
-          </button>
-          <button className="cursor-auto hover:bg-[#FFFFFF08]">
-            <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-              <img src="./public/assets/Trash-Icon.svg" alt="trash" />
-              <h1 className="text-[#FFFFFF99]">Trash</h1>
-            </div>
-          </button>
-          <button className="cursor-auto hover:bg-[#FFFFFF08]">
-            <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-              <img src="./public/assets/Archive-Icon.svg" alt="archive" />
-              <h1 className="text-[#FFFFFF99]">Archived Notes</h1>
-            </div>
-          </button>
+          <FavoritesComponent />
+          <TrashComponent />
+          <ArchivedComponent />
         </div>
       </div>
     </nav>

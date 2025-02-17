@@ -1,20 +1,21 @@
 import { ApiProvider } from "./components/APIContext";
-import FolderView from "./components/FolderView";
 import MainComponent from "./components/MainComponent";
-import SideBarView from "./components/SideBarView";
-import DisplayNotes from "./components/DisplayNotes";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <ApiProvider>
-        <MainComponent>
+    <ApiProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<MainComponent />} />
+        </Routes>
+        {/* <MainComponent>
           <SideBarView />
           <FolderView />
           <DisplayNotes />
-        </MainComponent>
-      </ApiProvider>
-    </>
+        </MainComponent> */}
+      </Router>
+    </ApiProvider>
   );
 }
 

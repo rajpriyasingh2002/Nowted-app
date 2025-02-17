@@ -59,3 +59,25 @@ export type FoldersComponentView = {
   recentNote: RecentNotesPreview | null;
   addRecentNote: (recentNote: RecentNotesPreview) => void;
 };
+
+export type RecentNoteCoponentView = {
+  recentNotes: RecentNotesPreview[];
+  selectedRecentNotes: string | null;
+  handleRecentNotesButton: (recentNote: RecentNotesPreview) => void;
+  recentNote: RecentNotesPreview | null;
+  setSelecetdRecentNotes: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+export type CreatedNote = {
+  folderId: string;
+  title: string;
+  content: string;
+  isFavorite: boolean;
+  isArchived: boolean;
+};
+
+export type MoreNotes = {
+  favorite: boolean;
+  archived: boolean;
+  deleted: boolean;
+};
