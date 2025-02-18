@@ -7,20 +7,20 @@ import NewNoteComponent from "./NewNoteComponent";
 import { FavoritesComponent } from "./FavoritesComponent";
 import { TrashComponent } from "./TrashComponent";
 import { ArchivedComponent } from "./ArchivedComponent";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const SideBarView = () => {
   const {
     folders,
     recentNotes,
     recentNote,
-    selectedFolderId,
+    selectedFolder,
     searchText,
     search,
     addRecentNote,
     addFolder,
     getNotes,
-    setSelectedFolderId,
+    setSelectedFolder,
     setSearchText,
     setSearch,
   } = useApi();
@@ -29,19 +29,22 @@ const SideBarView = () => {
   const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
     null
   );
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   function handleRecentNotesButton(recentNote: RecentNotesPreview) {
     setSelecetdRecentNotes(recentNote.id);
-    setSelectedFolderId(recentNote.folderId);
+    setSelectedFolder({
+      id: recentNote.folderId,
+      name: recentNote.folder.name,
+    });
     addRecentNote(recentNote);
-    getNotes(recentNote.folder);
+    getNotes(recentNote.folder.id);
     // navigate(`/recents/${recentNote.id}`);
   }
 
   function handleFoldersButton(folder: Folder) {
-    getNotes(folder);
-    setSelectedFolderId(folder.id);
+    getNotes(folder.id);
+    setSelectedFolder({ id: folder.id, name: folder.name });
     setSelecetdRecentNotes(null);
     addRecentNote(null);
     // navigate(`/folders/${folder.id}`);
@@ -54,7 +57,6 @@ const SideBarView = () => {
   function handleNewFolder(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     setNewFolder(e.target.value);
-    console.log(newFolder);
   }
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -121,7 +123,7 @@ const SideBarView = () => {
         newFolder={newFolder}
         handleNewFolder={handleNewFolder}
         folders={folders}
-        selectedFolderId={selectedFolderId}
+        selectedFolder={selectedFolder}
         handleFoldersButton={handleFoldersButton}
         recentNote={recentNote}
         addRecentNote={addRecentNote}

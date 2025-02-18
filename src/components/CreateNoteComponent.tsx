@@ -39,7 +39,7 @@ const CreateNoteComponent: React.FC<CreateComponent> = ({
       <div className="flex items-center justify-between">
         <input
           onChange={(e) => setNotesTitle(e)}
-          className="text-white bg-transparent outline-none appearance-none border-b border-white text-3xl font-semibold"
+          className="text-white bg-transparent outline-none appearance-none  text-3xl font-semibold"
           value={title}
         />
         <button

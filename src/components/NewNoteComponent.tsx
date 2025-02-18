@@ -1,16 +1,17 @@
 import { useApi } from "./APIContext";
+import { toast } from "react-toastify";
 
 const NewNoteComponent = () => {
-  const { newNote, selectedFolderId, setNewNote } = useApi();
+  const { newNote, selectedFolder, setNewNote } = useApi();
   function newNoteButtonHandler() {
     if (newNote) return;
 
-    if (!selectedFolderId) {
-      alert("Please select a folder to continue."); //use react - toastify instead of this
+    if (!selectedFolder.id) {
+      toast.info("Please select a folder to continue.");
       setNewNote(null);
       return;
     }
-    setNewNote(selectedFolderId);
+    setNewNote(selectedFolder.id);
   }
   return (
     <div className="text-white flex items-center justify-center">

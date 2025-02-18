@@ -7,19 +7,17 @@ export type Folder = {
 };
 
 export type NotesPreview = {
-  [key: string]: {
-    id: string;
-    folderId: string;
-    title: string;
-    isFavorite: boolean;
-    isArchived: boolean;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string;
-    preview: string;
-    folder: Folder;
-  }[];
-};
+  id: string;
+  folderId: string;
+  title: string;
+  isFavorite: boolean;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+  preview: string;
+  folder: Folder;
+}[];
 
 export type RecentNotesPreview = {
   id: string;
@@ -55,7 +53,7 @@ export type FoldersComponentView = {
   handleOnSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   newFolder: string;
   handleNewFolder: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  selectedFolderId: string | null;
+  selectedFolder: { id?: string; name?: string } | null;
   recentNote: RecentNotesPreview | null;
   addRecentNote: (recentNote: RecentNotesPreview) => void;
 };

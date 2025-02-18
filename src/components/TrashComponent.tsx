@@ -1,15 +1,16 @@
 import { useApi } from "./APIContext";
 
 export const TrashComponent = () => {
-  const { moreNotes } = useApi();
+  const { moreNotes, setSelectedFolder } = useApi();
 
   function trashButtonHandler(type: string) {
+    setSelectedFolder({ name: type });
     const moreDetails = {
       favorite: true,
       archived: true,
       deleted: true,
     };
-    moreNotes(type, moreDetails);
+    moreNotes(moreDetails);
   }
   return (
     <button

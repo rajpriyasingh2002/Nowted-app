@@ -4,9 +4,11 @@ import NoNotesView from "./NoNotesView";
 import { useEffect, useState } from "react";
 import CreateNoteComponent from "./CreateNoteComponent";
 import DeletedNoteView from "./DeletedNoteView";
+import { ClipLoader } from "react-spinners";
 
 const DisplayNotes = () => {
-  const { note, newNote, setNewNote, deleteNote, restoreNote } = useApi();
+  const { note, newNote, setNewNote, deleteNote, restoreNote, noteLoading } =
+    useApi();
   const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
@@ -28,6 +30,12 @@ const DisplayNotes = () => {
     content = <DeletedNoteView note={note} onRestoreClick={onRestoreClick} />;
   } else if (note) {
     content = <NotesView note={note} onDeleteHandler={onDeleteHandler} />;
+  } else if (noteLoading) {
+    content = (
+      <div className="flex justify-center items-center h-full">
+        <ClipLoader color="#ffffff" size={30} />
+      </div>
+    );
   } else {
     content = <NoNotesView />;
   }

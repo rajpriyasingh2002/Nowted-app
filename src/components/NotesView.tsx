@@ -51,7 +51,7 @@ const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
   useEffect(() => {
     setNotesFavourites(favorite, note.id);
     setNotesArchived(archive, note.id);
-    getNotes(note.folder);
+    getNotes(note.folder.id);
   }, [favorite, archive]);
 
   function handleFavouriteButton() {

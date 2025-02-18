@@ -1,15 +1,16 @@
 import { useApi } from "./APIContext";
 
 export const FavoritesComponent = () => {
-  const { moreNotes } = useApi();
+  const { moreNotes, setSelectedFolder } = useApi();
 
   function favoriteButtonHandler(type: string) {
+    setSelectedFolder({ name: type });
     const moreDetails = {
       favorite: true,
       archived: false,
       deleted: false,
     };
-    moreNotes(type, moreDetails);
+    moreNotes(moreDetails);
   }
   return (
     <button

@@ -1,14 +1,15 @@
 import { useApi } from "./APIContext";
 
 export const ArchivedComponent = () => {
-  const { moreNotes } = useApi();
+  const { moreNotes, setSelectedFolder } = useApi();
   function archiveButtonHandler(type: string) {
+    setSelectedFolder({ name: type });
     const moreDetails = {
       favorite: false,
       archived: true,
       deleted: false,
     };
-    moreNotes(type, moreDetails);
+    moreNotes(moreDetails);
   }
   return (
     <button
