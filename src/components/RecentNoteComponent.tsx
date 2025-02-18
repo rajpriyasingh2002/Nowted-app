@@ -31,7 +31,7 @@ const RecentNoteComponent: React.FC<RecentNoteCoponentView> = ({
               >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
                   <img
-                    src="./public/assets/Selected-Page-Icon.svg"
+                    src="/public/assets/Selected-Page-Icon.svg"
                     alt="file"
                   />
                   <h1 className="text-white">{item.title}</h1>

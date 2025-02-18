@@ -48,8 +48,16 @@ interface ApiContextType {
   setNotesLoading: React.Dispatch<React.SetStateAction<boolean>>;
   noteLoading: boolean;
   setNoteLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  updateNoteTitle: (noteId: string, title: string) => Promise<void>;
-  updateNoteContent: (noteId: string, content: string) => Promise<void>;
+  updateNoteTitle: (
+    noteId: string,
+    folderId: string,
+    title: string
+  ) => Promise<void>;
+  updateNoteContent: (
+    noteId: string,
+    folderId: string,
+    content: string
+  ) => Promise<void>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -79,7 +87,6 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const [foldersLoading, setFoldersLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(false);
   const [noteLoading, setNoteLoading] = useState(false);
-  
 
   useEffect(() => {
     setFoldersLoading(true);
@@ -229,7 +236,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const notesData = response.data.notes;
       setNotesPreview(notesData);
     } catch (error) {
-      toast.error("Failed to cfetch notes.");
+      toast.error("Failed to fetch notes.");
     }
   };
 
@@ -249,18 +256,28 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updateNoteTitle = async (noteId: string, title: string) => {
+  const updateNoteTitle = async (
+    noteId: string,
+    folderId: string,
+    title: string
+  ) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { title });
       await getNote(noteId);
+      await getNotes(folderId)
     } catch (error) {
       toast.error("Failed to update title.");
     }
   };
 
-  const updateNoteContent = async (noteId: string, content: string) => {
+  const updateNoteContent = async (
+    noteId: string,
+    folderId: string,
+    content: string
+  ) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { content });
+      await getNotes(folderId)
       await getNote(noteId);
     } catch (error) {
       toast.error("Failed to update content.");

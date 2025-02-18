@@ -76,7 +76,7 @@ const SideBarView = () => {
       <div className="flex justify-between pl-4 pr-4">
         <img
           className="cursor-auto"
-          src="./public/assets/Nowted-Logo.svg"
+          src="/public/assets/Nowted-Logo.svg"
           alt="Nowted.svg"
         />
         <button
@@ -84,9 +84,9 @@ const SideBarView = () => {
           onClick={() => setSearch((prev) => !prev)}
         >
           {search ? (
-            <img src="./public/assets/Search-Highlighted.svg" alt="search" />
+            <img src="/public/assets/Search-Highlighted.svg" alt="search" />
           ) : (
-            <img src="./public/assets/Search-Icon.svg" alt="search" />
+            <img src="/public/assets/Search-Icon.svg" alt="search" />
           )}
         </button>
       </div>
@@ -94,7 +94,7 @@ const SideBarView = () => {
         <div className="flex items-center justify-center pl-4 pr-4">
           <img
             className="p-3 bg-[#FFFFFF0D] h-full rounded-s-md"
-            src="./public/assets/Search-Input.svg"
+            src="/public/assets/Search-Input.svg"
             alt="..."
           />
           <input

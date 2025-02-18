@@ -25,8 +25,16 @@ type Note = {
 type NotesViewProps = {
   note: Note;
   onDeleteHandler: (noteid: string) => void;
-  updateNoteTitle: (noteId: string, title: string) => Promise<void>;
-  updateNoteContent: (noteId: string, content: string) => Promise<void>;
+  updateNoteTitle: (
+    noteId: string,
+    folderId: string,
+    title: string
+  ) => Promise<void>;
+  updateNoteContent: (
+    noteId: string,
+    folderId: string,
+    content: string
+  ) => Promise<void>;
 };
 
 const NotesView: React.FC<NotesViewProps> = ({
@@ -80,12 +88,12 @@ const NotesView: React.FC<NotesViewProps> = ({
   }, [favorite, archive]);
 
   const handleTitleSubmit = () => {
-    updateNoteTitle(note.id, editedTitle);
+    updateNoteTitle(note.id, note.folder.id, editedTitle);
     setIsEditingTitle(false);
   };
 
   const handleContentSubmit = () => {
-    updateNoteContent(note.id, editedContent);
+    updateNoteContent(note.id, note.folder.id, editedContent);
     setIsEditingContent(false);
   };
 
@@ -118,7 +126,7 @@ const NotesView: React.FC<NotesViewProps> = ({
         <div className="relative" ref={dropdownRef}>
           <img
             className="cursor-pointer"
-            src="./public/assets/Notes-Dropdown.svg"
+            src="/public/assets/Notes-Dropdown.svg"
             alt="menu"
             onClick={() => setIsOpen(!isOpen)}
           />
@@ -132,7 +140,7 @@ const NotesView: React.FC<NotesViewProps> = ({
                     className="flex gap-3 cursor-pointer"
                   >
                     <img
-                      src="./public/assets/Favourites-Bright-Icon.svg"
+                      src="/public/assets/Favourites-Bright-Icon.svg"
                       alt="favourites"
                     />{" "}
                     {favorite ? "Remove from Favorites" : "Add to Favorites"}
@@ -144,7 +152,7 @@ const NotesView: React.FC<NotesViewProps> = ({
                     className="flex gap-3 cursor-pointer"
                   >
                     <img
-                      src="./public/assets/Archive-Bright-Icon.svg"
+                      src="/public/assets/Archive-Bright-Icon.svg"
                       alt="archive"
                     />{" "}
                     {archive ? "Remove from Archive" : "Archive"}
@@ -157,7 +165,7 @@ const NotesView: React.FC<NotesViewProps> = ({
                     className="flex gap-3 cursor-pointer"
                   >
                     <img
-                      src="./public/assets/Trash-Bright-Icon.svg"
+                      src="/public/assets/Trash-Bright-Icon.svg"
                       alt="delete"
                     />{" "}
                     Delete
@@ -170,12 +178,12 @@ const NotesView: React.FC<NotesViewProps> = ({
       </div>
       <div>
         <div className="flex gap-5 border-b-2 border-[#FFFFFF1A] pl-0 p-3">
-          <img src="./public/assets/Calender-Icon.svg" alt="calender" />
+          <img src="/public/assets/Calender-Icon.svg" alt="calender" />
           <p className="text-[#FFFFFF99] pr-10 cursor-default">Date</p>
           <p className="text-white cursor-default">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
         </div>
         <div className="flex gap-5 pl-0 p-3">
-          <img src="./public/assets/Folder-Icon.svg" alt="calender" />
+          <img src="/public/assets/Folder-Icon.svg" alt="calender" />
           <p className="text-[#FFFFFF99] pr-10 cursor-default">Folder</p>
           <p className="text-white cursor-default">{note.folder.name}</p>
         </div>

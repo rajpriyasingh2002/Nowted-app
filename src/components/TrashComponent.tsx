@@ -18,7 +18,7 @@ export const TrashComponent = () => {
       className="cursor-pointer hover:bg-[#FFFFFF08]"
     >
       <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-        <img src="./public/assets/Trash-Icon.svg" alt="trash" />
+        <img src="/public/assets/Trash-Icon.svg" alt="trash" />
         <h1 className="text-[#FFFFFF99]">Trash</h1>
       </div>
     </button>
