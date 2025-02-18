@@ -21,17 +21,42 @@ type Note = {
   deletedAt: string;
   folder: Folder;
 };
+
 type NotesViewProps = {
   note: Note;
   onDeleteHandler: (noteid: string) => void;
+  updateNoteTitle: (noteId: string, title: string) => Promise<void>;
+  updateNoteContent: (noteId: string, content: string) => Promise<void>;
 };
 
-const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
+const NotesView: React.FC<NotesViewProps> = ({
+  note,
+  onDeleteHandler,
+  updateNoteTitle,
+  updateNoteContent,
+}) => {
   const { setNotesFavourites, setNotesArchived, getNotes } = useApi();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [favorite, setFavorite] = useState<boolean>(note.isFavorite);
   const [archive, setArchive] = useState<boolean>(note.isArchived);
+  const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
+  const [isEditingContent, setIsEditingContent] = useState<boolean>(false);
+  const [editedTitle, setEditedTitle] = useState<string>(note.title);
+  const [editedContent, setEditedContent] = useState<string>(note.content);
+
+  const pRef = useRef<HTMLParagraphElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Measure the height of the <p> tag and set it to the <textarea> when entering edit mode
+  useEffect(() => {
+    if (isEditingContent && pRef.current && textareaRef.current) {
+      // Get the height of the <p> tag
+      const pHeight = pRef.current.offsetHeight;
+      // Set the height of the <textarea> to match the <p> tag
+      textareaRef.current.style.height = `${pHeight}px`;
+    }
+  }, [isEditingContent]);
 
   const date = new Date(Date.parse(note.createdAt));
 
@@ -54,18 +79,42 @@ const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
     getNotes(note.folder.id);
   }, [favorite, archive]);
 
-  function handleFavouriteButton() {
-    setFavorite((prev) => !prev);
-  }
+  const handleTitleSubmit = () => {
+    updateNoteTitle(note.id, editedTitle);
+    setIsEditingTitle(false);
+  };
 
-  function onArchiveHandler() {
-    setArchive((prev) => !prev);
-  }
+  const handleContentSubmit = () => {
+    updateNoteContent(note.id, editedContent);
+    setIsEditingContent(false);
+  };
 
   return (
     <div className="flex flex-col gap-8 w-full">
       <div className="flex items-center justify-between relative">
-        <h1 className="text-white text-3xl font-semibold">{note.title}</h1>
+        {isEditingTitle ? (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              className="text-white text-3xl font-semibold bg-transparent outline-none border-b border-white"
+            />
+            <button
+              onClick={handleTitleSubmit}
+              className="bg-white text-black w-20 rounded text-lg"
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <h1
+            className="text-white text-3xl font-semibold cursor-default"
+            onDoubleClick={() => setIsEditingTitle(true)}
+          >
+            {note.title}
+          </h1>
+        )}
         <div className="relative" ref={dropdownRef}>
           <img
             className="cursor-pointer"
@@ -79,7 +128,7 @@ const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
               <ul className="py-1 text-white">
                 <li className="px-4 py-2">
                   <button
-                    onClick={() => handleFavouriteButton()}
+                    onClick={() => setFavorite((prev) => !prev)}
                     className="flex gap-3 cursor-pointer"
                   >
                     <img
@@ -91,7 +140,7 @@ const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
                 </li>
                 <li className="px-4 py-2 pb-5">
                   <button
-                    onClick={() => onArchiveHandler()}
+                    onClick={() => setArchive((prev) => !prev)}
                     className="flex gap-3 cursor-pointer"
                   >
                     <img
@@ -122,17 +171,43 @@ const NotesView: React.FC<NotesViewProps> = ({ note, onDeleteHandler }) => {
       <div>
         <div className="flex gap-5 border-b-2 border-[#FFFFFF1A] pl-0 p-3">
           <img src="./public/assets/Calender-Icon.svg" alt="calender" />
-          <p className="text-[#FFFFFF99] pr-10">Date</p>
-          <p className="text-white">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
+          <p className="text-[#FFFFFF99] pr-10 cursor-default">Date</p>
+          <p className="text-white cursor-default">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
         </div>
         <div className="flex gap-5 pl-0 p-3">
           <img src="./public/assets/Folder-Icon.svg" alt="calender" />
-          <p className="text-[#FFFFFF99] pr-10">Folder</p>
-          <p className="text-white">{note.folder.name}</p>
+          <p className="text-[#FFFFFF99] pr-10 cursor-default">Folder</p>
+          <p className="text-white cursor-default">{note.folder.name}</p>
         </div>
       </div>
       <div>
-        <p className="text-white">{note.content}</p>
+        {isEditingContent ? (
+          <div className="flex flex-col gap-10 pb-14">
+            <textarea
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              className="text-white text-lg outline-none bg-transparent"
+              rows={25}
+            />
+            <button
+              onClick={handleContentSubmit}
+              className="text-2xl bg-white pr-4 pl-4 rounded-md cursor-pointer"
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <div
+            className="text-white text-lg cursor-default pb-14"
+            onDoubleClick={() => setIsEditingContent(true)}
+          >
+            {note.content.split("\n").map((paragraph, index) => (
+              <p key={index} className="text-white text-lg">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

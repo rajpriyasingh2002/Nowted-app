@@ -16,7 +16,6 @@ interface ApiContextType {
   note: Note | null;
   recentNotes: RecentNotesPreview[];
   recentNote: RecentNotesPreview | null;
-  error: string | null;
   selectedFolder: {
     id?: string;
     name?: string;
@@ -49,6 +48,8 @@ interface ApiContextType {
   setNotesLoading: React.Dispatch<React.SetStateAction<boolean>>;
   noteLoading: boolean;
   setNoteLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  updateNoteTitle: (noteId: string, title: string) => Promise<void>;
+  updateNoteContent: (noteId: string, content: string) => Promise<void>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -63,7 +64,6 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const [note, setNote] = useState<Note | null>(null);
   const [recentNotes, setRecentNotes] = useState<RecentNotesPreview[]>([]);
   const [recentNote, setRecentNote] = useState<RecentNotesPreview | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<{
     id?: string;
     name?: string;
@@ -79,6 +79,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const [foldersLoading, setFoldersLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(false);
   const [noteLoading, setNoteLoading] = useState(false);
+  
 
   useEffect(() => {
     setFoldersLoading(true);
@@ -95,7 +96,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       })
       .catch((error) => {
-        toast.error("Failed to fetch folders.");
+        toast.error("Failed to fetch folders.", error);
       })
       .finally(() => setFoldersLoading(false));
 
@@ -106,7 +107,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         setRecentNotes(notesdata);
       })
       .catch((error) => {
-        toast.error("Failed to fetch recent notes.");
+        toast.error("Failed to fetch recent notes.", error);
       })
       .finally(() => setNotesLoading(false));
   }, []);
@@ -117,7 +118,6 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await AxiosApi.get("/folders");
       setFolders(response.data.folders);
     } catch (error) {
-      setError("Failed to add folder");
       toast.error("Failed to add folder.");
     }
   };
@@ -138,7 +138,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const notesData = response.data.notes;
       setNotesPreview(notesData);
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Unable to fetch notes.");
     } finally {
       setNotesLoading(false);
     }
@@ -151,7 +151,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const noteData = response.data.note;
       setNote(noteData);
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Unable to fetch note.");
     } finally {
       setNoteLoading(false);
     }
@@ -190,7 +190,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       setNote(newlyCreatedNote);
       setNewNote(null);
     } catch (error) {
-      setError("Failed to create note");
+      toast.error("Failed to create note.");
     }
   };
   const deleteNote = async (noteId: string) => {
@@ -200,7 +200,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.status !== 200) {
       }
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Failed to delete note.");
     }
   };
   const restoreNote = async (noteId: string) => {
@@ -210,7 +210,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.status !== 200) {
       }
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Failed to restore note.");
     }
   };
 
@@ -229,7 +229,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const notesData = response.data.notes;
       setNotesPreview(notesData);
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Failed to cfetch notes.");
     }
   };
 
@@ -237,7 +237,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AxiosApi.patch(`notes/${noteId}`, { isFavorite: favorite });
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Failed to set favorite.");
     }
   };
 
@@ -245,7 +245,25 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AxiosApi.patch(`notes/${noteId}`, { isArchived: archive });
     } catch (error) {
-      setError("Failed to add folder");
+      toast.error("Failed to set archive.");
+    }
+  };
+
+  const updateNoteTitle = async (noteId: string, title: string) => {
+    try {
+      await AxiosApi.patch(`notes/${noteId}`, { title });
+      await getNote(noteId);
+    } catch (error) {
+      toast.error("Failed to update title.");
+    }
+  };
+
+  const updateNoteContent = async (noteId: string, content: string) => {
+    try {
+      await AxiosApi.patch(`notes/${noteId}`, { content });
+      await getNote(noteId);
+    } catch (error) {
+      toast.error("Failed to update content.");
     }
   };
 
@@ -257,7 +275,6 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         note,
         recentNotes,
         recentNote,
-        error,
         newNote,
         search,
         searchText,
@@ -282,6 +299,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         setNotesLoading,
         noteLoading,
         setNoteLoading,
+        updateNoteTitle,
+        updateNoteContent,
       }}
     >
       {children}

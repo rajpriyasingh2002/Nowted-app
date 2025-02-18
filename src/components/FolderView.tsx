@@ -82,6 +82,11 @@ const FolderView = () => {
           })
         )}
       </div>
+      <div className="flex items-center justify-center">
+        <button className="bg-white text-black p-2 rounded-md cursor-pointer">
+          Load More
+        </button>
+      </div>
     </div>
   );
 };

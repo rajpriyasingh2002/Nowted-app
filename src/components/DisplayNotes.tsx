@@ -7,8 +7,16 @@ import DeletedNoteView from "./DeletedNoteView";
 import { ClipLoader } from "react-spinners";
 
 const DisplayNotes = () => {
-  const { note, newNote, setNewNote, deleteNote, restoreNote, noteLoading } =
-    useApi();
+  const {
+    note,
+    newNote,
+    setNewNote,
+    deleteNote,
+    restoreNote,
+    noteLoading,
+    updateNoteTitle,
+    updateNoteContent,
+  } = useApi();
   const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
@@ -19,7 +27,7 @@ const DisplayNotes = () => {
     if (note?.deletedAt) {
       setIsDeleted(true);
     } else {
-      setIsDeleted(false); // Reset when switching to a non-deleted note
+      setIsDeleted(false);
     }
   }, [note]);
 
@@ -29,7 +37,14 @@ const DisplayNotes = () => {
   } else if (isDeleted && note) {
     content = <DeletedNoteView note={note} onRestoreClick={onRestoreClick} />;
   } else if (note) {
-    content = <NotesView note={note} onDeleteHandler={onDeleteHandler} />;
+    content = (
+      <NotesView
+        note={note}
+        onDeleteHandler={onDeleteHandler}
+        updateNoteTitle={updateNoteTitle}
+        updateNoteContent={updateNoteContent}
+      />
+    );
   } else if (noteLoading) {
     content = (
       <div className="flex justify-center items-center h-full">
