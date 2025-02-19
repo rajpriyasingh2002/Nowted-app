@@ -1,7 +1,10 @@
-import { useApi } from "./APIContext";
+import { useNavigate } from "react-router-dom";
+import { useApi } from "../../Context/APIContext";
 
 export const TrashComponent = () => {
   const { moreNotes, setSelectedFolder } = useApi();
+
+  const navigate = useNavigate();
 
   function trashButtonHandler(type: string) {
     setSelectedFolder({ name: type });
@@ -11,6 +14,7 @@ export const TrashComponent = () => {
       deleted: true,
     };
     moreNotes(moreDetails);
+    navigate("/archive/notes");
   }
   return (
     <button

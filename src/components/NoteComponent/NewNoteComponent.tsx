@@ -1,4 +1,4 @@
-import { useApi } from "./APIContext";
+import { useApi } from "../../Context/APIContext";
 import { toast } from "react-toastify";
 
 const NewNoteComponent = () => {

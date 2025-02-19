@@ -6,8 +6,8 @@ import {
   RecentNotesPreview,
   CreatedNote,
   MoreNotes,
-} from "./TypesConfigration";
-import AxiosApi from "../AxiosApiInstance";
+} from "../Configrations/TypesConfigration";
+import AxiosApi from "../Configrations/AxiosApiInstance";
 import { toast } from "react-toastify";
 
 interface ApiContextType {
@@ -92,14 +92,14 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     setFoldersLoading(true);
     AxiosApi.get("/folders")
       .then((response) => {
-        const foldersdata = response.data.folders;
+        const foldersdata: Folder[] = response.data.folders;
         setFolders(foldersdata);
         if (foldersdata.length > 0) {
           setSelectedFolder({
             id: foldersdata[0].id,
             name: foldersdata[0].name,
           });
-          getNotes(foldersdata[0]);
+          getNotes(foldersdata[0].id);
         }
       })
       .catch((error) => {
@@ -110,7 +110,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     setNotesLoading(true);
     AxiosApi.get("/notes/recent")
       .then((response) => {
-        const notesdata = response.data.recentNotes;
+        const notesdata: RecentNotesPreview[] = response.data.recentNotes;
         setRecentNotes(notesdata);
       })
       .catch((error) => {
@@ -123,7 +123,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AxiosApi.post("/folders", { name: folderName });
       const response = await AxiosApi.get("/folders");
-      setFolders(response.data.folders);
+      const data: Folder[] = response.data.folders;
+      setFolders(data);
     } catch (error) {
       toast.error("Failed to add folder.");
     }
@@ -135,14 +136,14 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await AxiosApi.get("/notes", {
         params: {
           archived: false,
-          favorite: false,
+          favorite: true,
           deleted: false,
           folderId: folderId,
           page: 1,
           limit: 10,
         },
       });
-      const notesData = response.data.notes;
+      const notesData: NotesPreview = response.data.notes;
       setNotesPreview(notesData);
     } catch (error) {
       toast.error("Unable to fetch notes.");
@@ -155,7 +156,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     setNoteLoading(true);
     try {
       const response = await AxiosApi.get(`/notes/${noteId}`);
-      const noteData = response.data.note;
+      const noteData: Note = response.data.note;
       setNote(noteData);
     } catch (error) {
       toast.error("Unable to fetch note.");
@@ -264,7 +265,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AxiosApi.patch(`notes/${noteId}`, { title });
       await getNote(noteId);
-      await getNotes(folderId)
+      await getNotes(folderId);
     } catch (error) {
       toast.error("Failed to update title.");
     }
@@ -277,7 +278,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { content });
-      await getNotes(folderId)
+      await getNotes(folderId);
       await getNote(noteId);
     } catch (error) {
       toast.error("Failed to update content.");

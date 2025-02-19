@@ -1,6 +1,6 @@
-import { useApi } from "./APIContext";
-import { RecentNoteCoponentView } from "./TypesConfigration";
 import { ClipLoader } from "react-spinners";
+import { useApi } from "../../Context/APIContext";
+import { RecentNoteCoponentView } from "../../Configrations/TypesConfigration";
 
 const RecentNoteComponent: React.FC<RecentNoteCoponentView> = ({
   recentNotes,
@@ -30,10 +30,7 @@ const RecentNoteComponent: React.FC<RecentNoteCoponentView> = ({
                 onClick={() => handleRecentNotesButton(item)}
               >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-                  <img
-                    src="/public/assets/Selected-Page-Icon.svg"
-                    alt="file"
-                  />
+                  <img src="/public/assets/Selected-Page-Icon.svg" alt="file" />
                   <h1 className="text-white">{item.title}</h1>
                 </div>
               </button>
