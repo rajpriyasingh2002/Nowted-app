@@ -19,31 +19,26 @@ function App() {
         pauseOnHover
         theme="dark"
       />
-      {/* <Router>
+      <Router>
         <Routes>
-          <Route path="/" element={<MainComponent />}>
-            <Route
-              path="/recent/:folderid/notes/:noteid"
-              element={<MainComponent />}
-            />
-            <Route
-              path="/folders/:folderid/notes"
-              element={<MainComponent />}
-            />
-            <Route
-              path="/folders/:folderid/notes/:noteid"
-              element={<MainComponent />}
-            />
-            <Route path="/favorite/notes" element={<MainComponent />} />
-            <Route path="/favorite/notes/:noteid" element={<MainComponent />} />
-            <Route path="/trash/notes" element={<MainComponent />} />
-            <Route path="/trash/notes/:noteid" element={<MainComponent />} />
-            <Route path="/archive/notes" element={<MainComponent />} />
-            <Route path="/archive/notes/:noteid" element={<MainComponent />} />
-          </Route>
+          <Route path="/" element={<MainComponent />} />
+          <Route
+            path="/recent/:folderid/notes/:noteid"
+            element={<MainComponent />}
+          />
+          <Route path="/folders/:folderid/notes" element={<MainComponent />} />
+          <Route
+            path="/folders/:folderid/notes/:noteid"
+            element={<MainComponent />}
+          />
+          <Route path="/favorite/notes" element={<MainComponent />} />
+          <Route path="/favorite/notes/:noteid" element={<MainComponent />} />
+          <Route path="/trash/notes" element={<MainComponent />} />
+          <Route path="/trash/notes/:noteid" element={<MainComponent />} />
+          <Route path="/archive/notes" element={<MainComponent />} />
+          <Route path="/archive/notes/:noteid" element={<MainComponent />} />
         </Routes>
-      </Router> */}
-      <MainComponent></MainComponent>
+      </Router>
     </ApiProvider>
   );
 }

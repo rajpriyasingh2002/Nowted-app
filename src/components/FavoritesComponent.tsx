@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useApi } from "./APIContext";
 
 export const FavoritesComponent = () => {
   const { moreNotes, setSelectedFolder } = useApi();
+  const navigate = useNavigate();
 
   function favoriteButtonHandler(type: string) {
     setSelectedFolder({ name: type });
@@ -11,6 +13,7 @@ export const FavoritesComponent = () => {
       deleted: false,
     };
     moreNotes(moreDetails);
+    navigate("/favorite/notes");
   }
   return (
     <button

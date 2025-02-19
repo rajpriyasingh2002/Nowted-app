@@ -7,6 +7,7 @@ import NewNoteComponent from "./NewNoteComponent";
 import { FavoritesComponent } from "./FavoritesComponent";
 import { TrashComponent } from "./TrashComponent";
 import { ArchivedComponent } from "./ArchivedComponent";
+import { useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 
 const SideBarView = () => {
@@ -29,7 +30,7 @@ const SideBarView = () => {
   const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
     null
   );
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   function handleRecentNotesButton(recentNote: RecentNotesPreview) {
     setSelecetdRecentNotes(recentNote.id);
@@ -39,7 +40,7 @@ const SideBarView = () => {
     });
     addRecentNote(recentNote);
     getNotes(recentNote.folder.id);
-    // navigate(`/recents/${recentNote.id}`);
+    navigate(`/recent/${recentNote.folderId}/notes/${recentNote.id}`);
   }
 
   function handleFoldersButton(folder: Folder) {
@@ -47,7 +48,7 @@ const SideBarView = () => {
     setSelectedFolder({ id: folder.id, name: folder.name });
     setSelecetdRecentNotes(null);
     addRecentNote(null);
-    // navigate(`/folders/${folder.id}`);
+    navigate(`/folders/${folder.id}/notes`);
   }
 
   const handleFolderClickButton = () => {

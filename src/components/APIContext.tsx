@@ -264,7 +264,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AxiosApi.patch(`notes/${noteId}`, { title });
       await getNote(noteId);
-      await getNotes(folderId)
+      await getNotes(folderId);
     } catch (error) {
       toast.error("Failed to update title.");
     }
@@ -277,7 +277,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { content });
-      await getNotes(folderId)
+      await getNotes(folderId);
       await getNote(noteId);
     } catch (error) {
       toast.error("Failed to update content.");
