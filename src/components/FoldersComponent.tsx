@@ -1,6 +1,6 @@
+import { useApi } from "./APIContext";
+import { FoldersComponentView } from "./TypesConfigration";
 import { ClipLoader } from "react-spinners";
-import { FoldersComponentView } from "../../Configrations/TypesConfigration";
-import { useApi } from "../../Context/APIContext";
 
 const FoldersComponent: React.FC<FoldersComponentView> = ({
   handleFolderClickButton,
@@ -13,7 +13,6 @@ const FoldersComponent: React.FC<FoldersComponentView> = ({
   handleFoldersButton,
   recentNote,
 }) => {
-
   const { foldersLoading } = useApi();
   return (
     <div className="flex-1 flex-col gap-2">

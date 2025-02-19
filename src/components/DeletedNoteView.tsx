@@ -1,4 +1,4 @@
-import { Note } from "../../Configrations/TypesConfigration";
+import { Note } from "./TypesConfigration";
 
 type DeletedNotes = {
   note: Note;

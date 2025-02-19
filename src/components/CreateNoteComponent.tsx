@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
-import { useApi } from "../../Context/APIContext";
+import { useApi } from "./APIContext";
 
 type CreateComponent = {
   newNote: string;
@@ -33,7 +32,6 @@ const CreateNoteComponent: React.FC<CreateComponent> = ({
     };
     createNewNote(newCreatedNote);
     setNewNote(null);
-    toast.success("Notes saved successfullt.");
   }
 
   return (

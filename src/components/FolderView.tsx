@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useApi } from "./APIContext";
 import { ClipLoader } from "react-spinners";
-import { useNavigate } from "react-router-dom";
 
 const FolderView = () => {
   const {
@@ -16,8 +15,6 @@ const FolderView = () => {
   } = useApi();
   const [selectedNotesId, setSelectedNotesId] = useState<string | null>(null);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (recentNote) {
       setSelectedNotesId(recentNote.id);
@@ -31,17 +28,6 @@ const FolderView = () => {
     addRecentNote(null);
     getNote(id);
     setSelectedNotesId(id);
-
-    const folderPath =
-      selectedFolder.name === "Favorites"
-        ? "favorite"
-        : selectedFolder.name === "Trash"
-        ? "trash"
-        : selectedFolder.name === "Archived Notes"
-        ? "archive"
-        : `folders/${selectedFolder.id}`;
-
-    navigate(`/${folderPath}/notes/${id}`);
 
     const isSpecialFolder = ["Favorites", "Trash", "Archived Notes"].includes(
       folderName
@@ -96,6 +82,11 @@ const FolderView = () => {
           })
         )}
       </div>
+      {/* <div className="flex items-center justify-center">
+        <button className="bg-white text-black p-2 rounded-md cursor-pointer">
+          Load More
+        </button>
+      </div> */}
     </div>
   );
 };

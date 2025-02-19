@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useApi } from "../../Context/APIContext";
-import {
-  Folder,
-  RecentNotesPreview,
-} from "../../Configrations/TypesConfigration";
-import NewNoteComponent from "../NoteComponent/NewNoteComponent";
-import RecentNoteComponent from "./RecentNoteComponent";
+import { useApi } from "./APIContext";
+import { Folder, RecentNotesPreview } from "./TypesConfigration";
 import FoldersComponent from "./FoldersComponent";
+import RecentNoteComponent from "./RecentNoteComponent";
+import NewNoteComponent from "./NewNoteComponent";
 import { FavoritesComponent } from "./FavoritesComponent";
 import { TrashComponent } from "./TrashComponent";
 import { ArchivedComponent } from "./ArchivedComponent";
+// import { useNavigate } from "react-router-dom";
 
 const SideBarView = () => {
   const {
@@ -32,7 +29,7 @@ const SideBarView = () => {
   const [selectedRecentNotes, setSelecetdRecentNotes] = useState<string | null>(
     null
   );
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   function handleRecentNotesButton(recentNote: RecentNotesPreview) {
     setSelecetdRecentNotes(recentNote.id);
@@ -42,7 +39,7 @@ const SideBarView = () => {
     });
     addRecentNote(recentNote);
     getNotes(recentNote.folder.id);
-    navigate(`/recent/${recentNote.folderId}/notes/${recentNote.id}`);
+    // navigate(`/recents/${recentNote.id}`);
   }
 
   function handleFoldersButton(folder: Folder) {
@@ -50,7 +47,7 @@ const SideBarView = () => {
     setSelectedFolder({ id: folder.id, name: folder.name });
     setSelecetdRecentNotes(null);
     addRecentNote(null);
-    navigate(`/folders/${folder.id}/notes`);
+    // navigate(`/folders/${folder.id}`);
   }
 
   const handleFolderClickButton = () => {

@@ -1,11 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import { useApi } from "../../Context/APIContext";
+import { useApi } from "./APIContext";
 
 export const ArchivedComponent = () => {
   const { moreNotes, setSelectedFolder } = useApi();
-
-  const navigate = useNavigate();
-
   function archiveButtonHandler(type: string) {
     setSelectedFolder({ name: type });
     const moreDetails = {
@@ -14,7 +10,6 @@ export const ArchivedComponent = () => {
       deleted: false,
     };
     moreNotes(moreDetails);
-    navigate("/archive/notes");
   }
   return (
     <button

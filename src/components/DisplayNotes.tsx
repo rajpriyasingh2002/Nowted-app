@@ -1,10 +1,10 @@
+import { useApi } from "./APIContext";
+import NotesView from "./NotesView";
 import NoNotesView from "./NoNotesView";
 import { useEffect, useState } from "react";
 import CreateNoteComponent from "./CreateNoteComponent";
-import { ClipLoader } from "react-spinners";
-import { useApi } from "../../Context/APIContext";
 import DeletedNoteView from "./DeletedNoteView";
-import NotesView from "./NotesView";
+import { ClipLoader } from "react-spinners";
 
 const DisplayNotes = () => {
   const {
