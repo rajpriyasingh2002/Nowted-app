@@ -1,25 +1,60 @@
-import { useApi } from "./APIContext";
-import { FoldersComponentView } from "./TypesConfigration";
+import { useNavigate, useParams } from "react-router-dom";
+import { useApi } from "../Context/APIContext";
 import { ClipLoader } from "react-spinners";
+import { useEffect, useState } from "react";
+import { Folder } from "../../Configurations/TypesConfigration";
 
-const FoldersComponent: React.FC<FoldersComponentView> = ({
-  handleFolderClickButton,
-  folderButton,
-  handleOnSubmit,
-  newFolder,
-  handleNewFolder,
-  folders,
-  selectedFolder,
-  handleFoldersButton,
-  recentNote,
-}) => {
-  const { foldersLoading } = useApi();
+const FoldersComponent = () => {
+  const { folders, foldersLoading, setCurrentFolderName, addNewFolder } =
+    useApi();
+  const navigate = useNavigate();
+  const { folderid } = useParams();
+  const [folderButton, setFolderButton] = useState(false);
+  const [newFolder, setNewFolder] = useState("New Folder");
+  const [currentFolder, setCurrentFolder] = useState<string>(folderid || "");
+
+  useEffect(() => {
+    if (folders.length > 0) {
+      if (location.pathname === "/") {
+        setCurrentFolder(folders[0].id);
+        setCurrentFolderName(folders[0].name);
+        navigate(`/folders/${folders[0].id}/notes`, { replace: true });
+      } else if (folderid && folders.some((folder) => folder.id === folderid)) {
+        setCurrentFolder(folderid);
+        setCurrentFolderName(
+          folders.find((folder) => folder.id === folderid)?.name || "Folder"
+        );
+      }
+    }
+  }, [folders, folderid]);
+
+  function handleFoldersButton(folder: Folder) {
+    setCurrentFolderName(folder.name);
+    setCurrentFolder(folder.id);
+    navigate(`/folders/${folder.id}/notes`);
+  }
+
+  async function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const createdFolder = await addNewFolder(newFolder);
+
+    if (createdFolder) {
+      setCurrentFolder(createdFolder.id);
+      setCurrentFolderName(createdFolder.name);
+      navigate(`/folders/${createdFolder.id}/notes`);
+    }
+
+    setNewFolder("New Folder");
+    setFolderButton(false);
+  }
+
   return (
     <div className="flex-1 flex-col gap-2">
       <div className="flex pl-4 pr-4 justify-between items-center">
         <h1 className="text-[#FFFFFF99]">Folders</h1>
         <img
-          onClick={handleFolderClickButton}
+          onClick={() => setFolderButton((prev) => !prev)}
           src="/public/assets/Add-Folder-Icon.svg"
           alt=""
         />
@@ -35,7 +70,7 @@ const FoldersComponent: React.FC<FoldersComponentView> = ({
               type="text"
               className="text-[#FFFFFF99] bg-transparent outline-none appearance-none border-b border-[#FFFFFF99]"
               value={newFolder}
-              onChange={handleNewFolder}
+              onChange={(e) => setNewFolder(e.target.value)}
             />
           </form>
         )}
@@ -45,10 +80,7 @@ const FoldersComponent: React.FC<FoldersComponentView> = ({
           </div>
         ) : (
           folders.map((item) => {
-            const isHighlighted =
-              selectedFolder?.id === item.id ||
-              (recentNote?.folderId === item.id && !selectedFolder?.id);
-
+            const isHighlighted = currentFolder === item.id;
             return (
               <button
                 key={item.id}

@@ -4,40 +4,32 @@ import {
   NotesPreview,
   Note,
   RecentNotesPreview,
-  CreatedNote,
-  MoreNotes,
-} from "./TypesConfigration";
-import AxiosApi from "../AxiosApiInstance";
+} from "../../Configurations/TypesConfigration";
+import AxiosApi from "../../AxiosApiInstance";
 import { toast } from "react-toastify";
 
 interface ApiContextType {
   folders: Folder[];
-  notesPreview: NotesPreview;
-  note: Note | null;
   recentNotes: RecentNotesPreview[];
-  recentNote: RecentNotesPreview | null;
-  selectedFolder: {
-    id?: string;
-    name?: string;
-  };
-  newNote: string | null;
   search: boolean;
   searchText: string;
-  addFolder: (folderName: string) => Promise<void>;
-  getNotes: (folderId: string) => Promise<void>;
-  getNote: (noteId: string) => Promise<void>;
-  addRecentNote: (recentNote: RecentNotesPreview | null) => void;
-  setSelectedFolder: React.Dispatch<
-    React.SetStateAction<{
-      id?: string;
-      name?: string;
-    }>
-  >;
-  setNewNote: React.Dispatch<React.SetStateAction<string | null>>;
-  createNewNote: (newCreatedNote: CreatedNote) => Promise<void>;
+  addNewFolder: (folderName: string) => Promise<Folder | undefined>;
+  getFolderNotes: (folderId: string) => Promise<NotesPreview[] | undefined>;
+  getSelectedNote: (noteId: string) => Promise<Note | undefined>;
+  createNewNote: (newCreatedNote: {
+    folderId: string;
+    title: string;
+    content: string;
+    isFavorite: boolean;
+    isArchived: boolean;
+  }) => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
   restoreNote: (noteId: string) => Promise<void>;
-  moreNotes: (moreDetails: MoreNotes) => Promise<void>;
+  moreNotes: (moreDetails: {
+    archived: boolean;
+    favorite: boolean;
+    deleted: boolean;
+  }) => Promise<NotesPreview[] | undefined>;
   setNotesFavourites: (favorite: boolean, noteId: string) => Promise<void>;
   setNotesArchived: (archive: boolean, noteId: string) => Promise<void>;
   setSearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,16 +40,13 @@ interface ApiContextType {
   setNotesLoading: React.Dispatch<React.SetStateAction<boolean>>;
   noteLoading: boolean;
   setNoteLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  updateNoteTitle: (
-    noteId: string,
-    folderId: string,
-    title: string
-  ) => Promise<void>;
+  updateNoteTitle: (noteId: string, title: string) => Promise<Note | undefined>;
   updateNoteContent: (
     noteId: string,
-    folderId: string,
     content: string
-  ) => Promise<void>;
+  ) => Promise<Note | undefined>;
+  currentFolderName: string;
+  setCurrentFolderName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -66,41 +55,20 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [folders, setFolders] = useState<Folder[]>([]);
-  const [notesPreview, setNotesPreview] = useState<NotesPreview>(
-    [] as NotesPreview
-  );
-  const [note, setNote] = useState<Note | null>(null);
   const [recentNotes, setRecentNotes] = useState<RecentNotesPreview[]>([]);
-  const [recentNote, setRecentNote] = useState<RecentNotesPreview | null>(null);
-  const [selectedFolder, setSelectedFolder] = useState<{
-    id?: string;
-    name?: string;
-  }>(
-    {} as {
-      id?: string;
-      name?: string;
-    }
-  );
-  const [newNote, setNewNote] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>("");
   const [search, setSearch] = useState<boolean>(false);
   const [foldersLoading, setFoldersLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(false);
   const [noteLoading, setNoteLoading] = useState(false);
+  const [currentFolderName, setCurrentFolderName] = useState<string>("");
 
   useEffect(() => {
     setFoldersLoading(true);
     AxiosApi.get("/folders")
       .then((response) => {
-        const foldersdata = response.data.folders;
+        const foldersdata: Folder[] = response.data.folders;
         setFolders(foldersdata);
-        if (foldersdata.length > 0) {
-          setSelectedFolder({
-            id: foldersdata[0].id,
-            name: foldersdata[0].name,
-          });
-          getNotes(foldersdata[0]);
-        }
       })
       .catch((error) => {
         toast.error("Failed to fetch folders.", error);
@@ -110,8 +78,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     setNotesLoading(true);
     AxiosApi.get("/notes/recent")
       .then((response) => {
-        const notesdata = response.data.recentNotes;
-        setRecentNotes(notesdata);
+        const recentNotesData: RecentNotesPreview[] = response.data.recentNotes;
+        setRecentNotes(recentNotesData);
       })
       .catch((error) => {
         toast.error("Failed to fetch recent notes.", error);
@@ -119,17 +87,22 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
       .finally(() => setNotesLoading(false));
   }, []);
 
-  const addFolder = async (folderName: string) => {
+  const addNewFolder = async (folderName: string) => {
+    setFoldersLoading(true);
     try {
       await AxiosApi.post("/folders", { name: folderName });
       const response = await AxiosApi.get("/folders");
-      setFolders(response.data.folders);
+      const foldersdata: Folder[] = response.data.folders;
+      setFolders(foldersdata);
+      return folders[0];
     } catch (error) {
       toast.error("Failed to add folder.");
+    } finally {
+      setFoldersLoading(false);
     }
   };
 
-  const getNotes = async (folderId: string) => {
+  const getFolderNotes = async (folderId: string) => {
     setNotesLoading(true);
     try {
       const response = await AxiosApi.get("/notes", {
@@ -142,8 +115,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           limit: 10,
         },
       });
-      const notesData = response.data.notes;
-      setNotesPreview(notesData);
+      const notesData: NotesPreview[] = response.data.notes;
+      return notesData;
     } catch (error) {
       toast.error("Unable to fetch notes.");
     } finally {
@@ -151,51 +124,28 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getNote = async (noteId: string) => {
+  const getSelectedNote = async (noteId: string) => {
     setNoteLoading(true);
     try {
       const response = await AxiosApi.get(`/notes/${noteId}`);
-      const noteData = response.data.note;
-      setNote(noteData);
+      const noteData: Note = response.data.note;
+      return noteData;
     } catch (error) {
       toast.error("Unable to fetch note.");
     } finally {
       setNoteLoading(false);
     }
   };
-  const addRecentNote = (recentNote: RecentNotesPreview | null) => {
-    setRecentNote(recentNote);
-  };
 
-  const createNewNote = async (newCreatedNote: CreatedNote) => {
+  const createNewNote = async (newCreatedNote: {
+    folderId: string;
+    title: string;
+    content: string;
+    isFavorite: boolean;
+    isArchived: boolean;
+  }) => {
     try {
       await AxiosApi.post("/notes", newCreatedNote);
-
-      const response = await AxiosApi.get("/notes", {
-        params: {
-          archived: false,
-          favorite: false,
-          deleted: false,
-          folderId: newCreatedNote.folderId,
-          page: 1,
-          limit: 10,
-        },
-      });
-
-      const updatedNotes = response.data.notes;
-
-      if (!updatedNotes || updatedNotes.length === 0) {
-        throw new Error("No notes found after creation");
-      }
-
-      const newlyCreatedNote = updatedNotes[0];
-
-      setNotesPreview((prev) => ({
-        ...prev,
-        [newCreatedNote.folderId]: updatedNotes,
-      }));
-      setNote(newlyCreatedNote);
-      setNewNote(null);
     } catch (error) {
       toast.error("Failed to create note.");
     }
@@ -221,7 +171,11 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const moreNotes = async (moreDetails: MoreNotes) => {
+  const moreNotes = async (moreDetails: {
+    archived: boolean;
+    favorite: boolean;
+    deleted: boolean;
+  }) => {
     try {
       const response = await AxiosApi.get("/notes", {
         params: {
@@ -233,8 +187,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           limit: 10,
         },
       });
-      const notesData = response.data.notes;
-      setNotesPreview(notesData);
+      const notesData: NotesPreview[] = response.data.notes;
+      return notesData;
     } catch (error) {
       toast.error("Failed to fetch notes.");
     }
@@ -256,29 +210,21 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updateNoteTitle = async (
-    noteId: string,
-    folderId: string,
-    title: string
-  ) => {
+  const updateNoteTitle = async (noteId: string, title: string) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { title });
-      await getNote(noteId);
-      await getNotes(folderId);
+      const updatedNote = await getSelectedNote(noteId);
+      return updatedNote;
     } catch (error) {
       toast.error("Failed to update title.");
     }
   };
 
-  const updateNoteContent = async (
-    noteId: string,
-    folderId: string,
-    content: string
-  ) => {
+  const updateNoteContent = async (noteId: string, content: string) => {
     try {
       await AxiosApi.patch(`notes/${noteId}`, { content });
-      await getNotes(folderId);
-      await getNote(noteId);
+      const updatedNote = await getSelectedNote(noteId);
+      return updatedNote;
     } catch (error) {
       toast.error("Failed to update content.");
     }
@@ -288,20 +234,12 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     <ApiContext.Provider
       value={{
         folders,
-        notesPreview,
-        note,
         recentNotes,
-        recentNote,
-        newNote,
         search,
         searchText,
-        addFolder,
-        getNotes,
-        getNote,
-        addRecentNote,
-        selectedFolder,
-        setSelectedFolder,
-        setNewNote,
+        addNewFolder,
+        getFolderNotes,
+        getSelectedNote,
         createNewNote,
         deleteNote,
         restoreNote,
@@ -318,6 +256,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         setNoteLoading,
         updateNoteTitle,
         updateNoteContent,
+        currentFolderName,
+        setCurrentFolderName,
       }}
     >
       {children}

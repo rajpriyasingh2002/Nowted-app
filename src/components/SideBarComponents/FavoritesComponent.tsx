@@ -1,23 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { useApi } from "./APIContext";
+import { useApi } from "../Context/APIContext";
 
 export const FavoritesComponent = () => {
-  const { moreNotes, setSelectedFolder } = useApi();
+  const { setCurrentFolderName } = useApi();
   const navigate = useNavigate();
 
-  function favoriteButtonHandler(type: string) {
-    setSelectedFolder({ name: type });
-    const moreDetails = {
-      favorite: true,
-      archived: false,
-      deleted: false,
-    };
-    moreNotes(moreDetails);
-    navigate("/favorite/notes");
+  function favoriteButtonHandler() {
+    setCurrentFolderName("Favorite Notes");
+    navigate("/favorites/notes");
   }
   return (
     <button
-      onClick={() => favoriteButtonHandler("Favorites")}
+      onClick={() => favoriteButtonHandler()}
       className="cursor-pointer hover:bg-[#FFFFFF08]"
     >
       <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">

@@ -1,13 +1,16 @@
-import { useApi } from "./APIContext";
-import { RecentNoteCoponentView } from "./TypesConfigration";
+import { useApi } from "../Context/APIContext";
 import { ClipLoader } from "react-spinners";
+import { RecentNotesPreview } from "../../Configurations/TypesConfigration";
+import { useNavigate } from "react-router-dom";
 
-const RecentNoteComponent: React.FC<RecentNoteCoponentView> = ({
-  recentNotes,
-  selectedRecentNotes,
-  handleRecentNotesButton,
-}) => {
-  const { notesLoading } = useApi();
+const RecentNoteComponent = () => {
+  const { recentNotes, notesLoading } = useApi();
+
+  const navigate = useNavigate();
+
+  function handleRecentNotesButton(recentNote: RecentNotesPreview) {
+    navigate(`/recent/${recentNote.folderId}/notes/${recentNote.id}`);
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -22,18 +25,11 @@ const RecentNoteComponent: React.FC<RecentNoteCoponentView> = ({
             return (
               <button
                 key={item.id}
-                className={`cursor-auto" ${
-                  selectedRecentNotes === item.id
-                    ? "bg-[#312EB5]"
-                    : "hover:bg-[#312EB5]"
-                } `}
+                className={"cursor-auto hover:bg-[#312EB5]"}
                 onClick={() => handleRecentNotesButton(item)}
               >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
-                  <img
-                    src="/public/assets/Selected-Page-Icon.svg"
-                    alt="file"
-                  />
+                  <img src="/public/assets/Selected-Page-Icon.svg" alt="file" />
                   <h1 className="text-white">{item.title}</h1>
                 </div>
               </button>
