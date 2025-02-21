@@ -69,6 +69,7 @@ export interface ApiContextType {
     archived: boolean;
     favorite: boolean;
     deleted: boolean;
+    page: number;
   }) => Promise<NotesPreview[] | undefined>;
   setNotesFavourites: (favorite: boolean, noteId: string) => Promise<void>;
   setNotesArchived: (archive: boolean, noteId: string) => Promise<void>;
