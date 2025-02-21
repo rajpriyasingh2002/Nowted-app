@@ -30,7 +30,11 @@ const RecentNoteComponent = () => {
               >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
                   <img src="/public/assets/Selected-Page-Icon.svg" alt="file" />
-                  <h1 className="text-white">{item.title}</h1>
+                  <h1 className="text-white">
+                    {item.title.length > 30
+                      ? item.title.slice(0, 30) + "..."
+                      : item.title}
+                  </h1>
                 </div>
               </button>
             );

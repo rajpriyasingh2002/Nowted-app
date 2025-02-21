@@ -13,7 +13,8 @@ const FolderView = () => {
     getFolderNotes,
     moreNotes,
   } = useApi();
-  const [folderNotes, setFolderNotes] = useState<NotesPreview[] | null>(null);
+  const [folderNotes, setFolderNotes] = useState<NotesPreview[]>([]);
+  const [page, setPage] = useState<number>(1);
   const [currentNote, setCurrentNote] = useState<string>("");
   const { folderid, noteid } = useParams();
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const FolderView = () => {
           deleted: true,
         });
       } else if (folderid) {
-        notes = await getFolderNotes(folderid);
+        notes = await getFolderNotes(folderid, page);
       }
 
       if (notes) {
@@ -65,6 +66,14 @@ const FolderView = () => {
     setCurrentNote(noteId);
     const basePath = location.pathname.split("/notes")[0];
     navigate(`${basePath}/notes/${noteId}`);
+  }
+
+  async function loadMoreButtonHandler() {
+    setPage((prev) => prev + 1);
+
+    const newNotes = (await getFolderNotes(folderid!, page)) || [];
+
+    setFolderNotes((prev) => [...(prev || []), ...newNotes]);
   }
 
   return (
@@ -96,7 +105,9 @@ const FolderView = () => {
                   } pt-5 p-4 flex flex-col gap-3 cursor-pointer`}
                 >
                   <h1 className="text-white text-lg font-semibold">
-                    {item.title}
+                    {item.title.length > 30
+                      ? item.title.slice(0, 30) + "..."
+                      : item.title}
                   </h1>
                   <div className="flex gap-2 justify-between">
                     <p className="text-[#FFFFFF66]">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
@@ -110,6 +121,16 @@ const FolderView = () => {
           })
         )}
       </div>
+      {(folderNotes && folderNotes.length < page * 10) || (
+        <div className="flex items-center justify-center">
+          <button
+            className="bg-[#FFFFFF08] text-white p-2 pl-4 pr-4 rounded-md cursor-pointer"
+            onClick={() => loadMoreButtonHandler()}
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   );
 };

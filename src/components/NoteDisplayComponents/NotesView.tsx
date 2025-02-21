@@ -105,7 +105,9 @@ const NotesView: React.FC<NotesViewProps> = ({ note }) => {
                 className="text-white text-3xl font-semibold cursor-default"
                 onDoubleClick={() => setIsEditingTitle(true)}
               >
-                {note.title}
+                {note.title.length > 30
+                  ? note.title.slice(0, 30) + "..."
+                  : note.title}
               </h1>
             )}
             <div className="relative" ref={dropdownRef}>

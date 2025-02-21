@@ -5,8 +5,13 @@ import { useEffect, useState } from "react";
 import { Folder } from "../../Configurations/TypesConfigration";
 
 const FoldersComponent = () => {
-  const { folders, foldersLoading, setCurrentFolderName, addNewFolder } =
-    useApi();
+  const {
+    folders,
+    foldersLoading,
+    setCurrentFolderName,
+    addNewFolder,
+    deleteFolder,
+  } = useApi();
   const navigate = useNavigate();
   const { folderid } = useParams();
   const [folderButton, setFolderButton] = useState(false);
@@ -49,6 +54,14 @@ const FoldersComponent = () => {
     setFolderButton(false);
   }
 
+  async function onFolderDeleteHandler(folderId: string) {
+    const folder = await deleteFolder(folderId);
+    if (folder) {
+      setCurrentFolder(folder.id);
+      setCurrentFolderName(folder.name);
+    }
+  }
+
   return (
     <div className="flex-1 flex-col gap-2">
       <div className="flex pl-4 pr-4 justify-between items-center">
@@ -89,21 +102,36 @@ const FoldersComponent = () => {
                 }`}
                 onClick={() => handleFoldersButton(item)}
               >
-                <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">
+                <div className="flex items-center justify-between pl-4 pr-4 pt-2 pb-2">
                   {isHighlighted ? (
                     <>
-                      <img
-                        src="/public/assets/Open-Folder-Icon.svg"
-                        alt="folder"
-                      />
-                      <h1 className="text-white">{item.name}</h1>
+                      <button className="cursor-pointer">
+                        <div className="flex gap-4">
+                          <img
+                            src="/public/assets/Open-Folder-Icon.svg"
+                            alt="folder"
+                          />
+                          <h1 className="text-white">{item.name}</h1>
+                        </div>
+                      </button>
                     </>
                   ) : (
                     <>
-                      <img src="/public/assets/Folder-Icon.svg" alt="folder" />
-                      <h1 className="text-[#FFFFFF99]">{item.name}</h1>
+                      <div className="flex gap-4">
+                        <img
+                          src="/public/assets/Folder-Icon.svg"
+                          alt="folder"
+                        />
+                        <h1 className="text-[#FFFFFF99]">{item.name}</h1>
+                      </div>
                     </>
                   )}
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => onFolderDeleteHandler(item.id)}
+                  >
+                    <img src="/public/assets/Trash-Icon.svg" alt="..." />
+                  </button>
                 </div>
               </button>
             );

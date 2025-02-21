@@ -4,50 +4,10 @@ import {
   NotesPreview,
   Note,
   RecentNotesPreview,
+  ApiContextType,
 } from "../../Configurations/TypesConfigration";
 import AxiosApi from "../../AxiosApiInstance";
 import { toast } from "react-toastify";
-
-interface ApiContextType {
-  folders: Folder[];
-  recentNotes: RecentNotesPreview[];
-  search: boolean;
-  searchText: string;
-  addNewFolder: (folderName: string) => Promise<Folder | undefined>;
-  getFolderNotes: (folderId: string) => Promise<NotesPreview[] | undefined>;
-  getSelectedNote: (noteId: string) => Promise<Note | undefined>;
-  createNewNote: (newCreatedNote: {
-    folderId: string;
-    title: string;
-    content: string;
-    isFavorite: boolean;
-    isArchived: boolean;
-  }) => Promise<void>;
-  deleteNote: (noteId: string) => Promise<void>;
-  restoreNote: (noteId: string) => Promise<void>;
-  moreNotes: (moreDetails: {
-    archived: boolean;
-    favorite: boolean;
-    deleted: boolean;
-  }) => Promise<NotesPreview[] | undefined>;
-  setNotesFavourites: (favorite: boolean, noteId: string) => Promise<void>;
-  setNotesArchived: (archive: boolean, noteId: string) => Promise<void>;
-  setSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  foldersLoading: boolean;
-  setFoldersLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  notesLoading: boolean;
-  setNotesLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  noteLoading: boolean;
-  setNoteLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  updateNoteTitle: (noteId: string, title: string) => Promise<Note | undefined>;
-  updateNoteContent: (
-    noteId: string,
-    content: string
-  ) => Promise<Note | undefined>;
-  currentFolderName: string;
-  setCurrentFolderName: React.Dispatch<React.SetStateAction<string>>;
-}
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
@@ -102,7 +62,22 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getFolderNotes = async (folderId: string) => {
+  const deleteFolder = async (folderId: string) => {
+    setFoldersLoading(true);
+    try {
+      await AxiosApi.delete(`/folders/${folderId}`);
+      const response = await AxiosApi.get("/folders");
+      const foldersdata: Folder[] = response.data.folders;
+      setFolders(foldersdata);
+      return folders[0];
+    } catch (error) {
+      toast.error("Failed to delete folder.");
+    } finally {
+      setFoldersLoading(false);
+    }
+  };
+
+  const getFolderNotes = async (folderId: string, page: number) => {
     setNotesLoading(true);
     try {
       const response = await AxiosApi.get("/notes", {
@@ -111,12 +86,12 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           favorite: false,
           deleted: false,
           folderId: folderId,
-          page: 1,
+          page: page,
           limit: 10,
         },
       });
       const notesData: NotesPreview[] = response.data.notes;
-      return notesData;
+      return notesData || [];
     } catch (error) {
       toast.error("Unable to fetch notes.");
     } finally {
@@ -258,6 +233,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         updateNoteContent,
         currentFolderName,
         setCurrentFolderName,
+        deleteFolder,
       }}
     >
       {children}
