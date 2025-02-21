@@ -23,12 +23,17 @@ const FolderView = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       let notes: NotesPreview[] | undefined;
+
+      // Reset page when location changes
+      setPage(1);
+
       if (location.pathname.startsWith("/favorites")) {
         setCurrentFolderName("Favorites");
         notes = await moreNotes({
           archived: false,
           favorite: true,
           deleted: false,
+          page: 1,
         });
       } else if (location.pathname.startsWith("/archive")) {
         setCurrentFolderName("Archived Notes");
@@ -36,6 +41,7 @@ const FolderView = () => {
           archived: true,
           favorite: false,
           deleted: false,
+          page: 1,
         });
       } else if (location.pathname.startsWith("/trash")) {
         setCurrentFolderName("Trash");
@@ -43,9 +49,10 @@ const FolderView = () => {
           archived: false,
           favorite: false,
           deleted: true,
+          page: 1,
         });
       } else if (folderid) {
-        notes = await getFolderNotes(folderid, page);
+        notes = await getFolderNotes(folderid, 1);
       }
 
       if (notes) {
@@ -69,11 +76,39 @@ const FolderView = () => {
   }
 
   async function loadMoreButtonHandler() {
-    setPage((prev) => prev + 1);
+    const nextPage = page + 1;
+    setPage(nextPage);
 
-    const newNotes = (await getFolderNotes(folderid!, page)) || [];
+    let newNotes: NotesPreview[] | undefined;
 
-    setFolderNotes((prev) => [...(prev || []), ...newNotes]);
+    if (location.pathname.startsWith("/favorites")) {
+      newNotes = await moreNotes({
+        archived: false,
+        favorite: true,
+        deleted: false,
+        page: nextPage,
+      });
+    } else if (location.pathname.startsWith("/archive")) {
+      newNotes = await moreNotes({
+        archived: true,
+        favorite: false,
+        deleted: false,
+        page: nextPage,
+      });
+    } else if (location.pathname.startsWith("/trash")) {
+      newNotes = await moreNotes({
+        archived: false,
+        favorite: false,
+        deleted: true,
+        page: nextPage,
+      });
+    } else if (folderid) {
+      newNotes = await getFolderNotes(folderid, nextPage);
+    }
+
+    if (newNotes) {
+      setFolderNotes((prev) => [...prev, ...newNotes!]);
+    }
   }
 
   return (

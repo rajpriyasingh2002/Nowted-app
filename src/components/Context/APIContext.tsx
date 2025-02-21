@@ -150,6 +150,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     archived: boolean;
     favorite: boolean;
     deleted: boolean;
+    page: number;
   }) => {
     try {
       const response = await AxiosApi.get("/notes", {
@@ -158,7 +159,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           favorite: moreDetails.favorite,
           deleted: moreDetails.deleted,
           folderId: null,
-          page: 1,
+          page: moreDetails.page,
           limit: 10,
         },
       });
