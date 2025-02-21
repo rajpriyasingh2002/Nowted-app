@@ -1,11 +1,17 @@
-import { Note } from "./TypesConfigration";
+import { Note } from "../../Configurations/TypesConfigration";
+import { useApi } from "../Context/APIContext";
 
 type DeletedNotes = {
   note: Note;
-  onRestoreClick: (noteId: string) => void;
 };
 
-const DeletedNoteView: React.FC<DeletedNotes> = ({ note, onRestoreClick }) => {
+const DeletedNoteView: React.FC<DeletedNotes> = ({ note }) => {
+  const { restoreNote } = useApi();
+
+  function onRestoreClick(noteId: string) {
+    restoreNote(noteId);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center w-[50%]">
       <div className="flex flex-col items-center justify-center gap-4">
