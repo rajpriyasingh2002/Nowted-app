@@ -22,7 +22,6 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<MainComponent />} />
-          <Route path="/search" element={<MainComponent />} />
           <Route
             path="/recent/:folderid/notes/:noteid"
             element={<MainComponent />}

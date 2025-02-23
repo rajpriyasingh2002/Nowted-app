@@ -25,7 +25,7 @@ const RecentNoteComponent = () => {
             return (
               <button
                 key={item.id}
-                className={"cursor-auto hover:bg-[#312EB5]"}
+                className={"cursor-pointer hover:bg-[#312EB5]"}
                 onClick={() => handleRecentNotesButton(item)}
               >
                 <div className="flex items-center gap-4 pl-4 pr-4 pt-2 pb-2">

@@ -14,8 +14,4 @@
     background-color: #ffffff99;
     border-radius: 10px;
   }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #357abd;
-  }
 }

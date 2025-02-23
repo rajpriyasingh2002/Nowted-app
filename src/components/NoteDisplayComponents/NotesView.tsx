@@ -169,7 +169,9 @@ const NotesView: React.FC<NotesViewProps> = ({ note }) => {
             <div className="flex gap-5 border-b-2 border-[#FFFFFF1A] pl-0 p-3">
               <img src="/public/assets/Calender-Icon.svg" alt="calender" />
               <p className="text-[#FFFFFF99] pr-10 cursor-default">Date</p>
-              <p className="text-white cursor-default">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
+              <p className="text-white cursor-default">
+                {date.toLocaleDateString("en-GB")}
+              </p>
             </div>
             <div className="flex gap-5 pl-0 p-3">
               <img src="/public/assets/Folder-Icon.svg" alt="calender" />

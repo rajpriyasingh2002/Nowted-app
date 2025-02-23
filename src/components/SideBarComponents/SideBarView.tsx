@@ -9,10 +9,6 @@ import { TrashComponent } from "./TrashComponent";
 const SideBarView = () => {
   const { searchText, search, setSearchText, setSearch } = useApi();
 
-  function onSearchTextHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchText(e.target.value);
-  }
-
   return (
     <nav className="w-[20%] bg-transparent flex flex-col pt-6 gap-10 h-screen">
       <div className="flex justify-between pl-4 pr-4">
@@ -44,7 +40,7 @@ const SideBarView = () => {
             type="text"
             placeholder="SearchNote"
             value={searchText}
-            onChange={(e) => onSearchTextHandler(e)}
+            onChange={(e) => setSearchText(e.target.value)}
           />
         </div>
       ) : (

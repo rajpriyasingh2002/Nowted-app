@@ -23,8 +23,6 @@ const FolderView = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       let notes: NotesPreview[] | undefined;
-
-      // Reset page when location changes
       setPage(1);
 
       if (location.pathname.startsWith("/favorites")) {
@@ -44,7 +42,7 @@ const FolderView = () => {
           page: 1,
         });
       } else if (location.pathname.startsWith("/trash")) {
-        setCurrentFolderName("Trash");
+        setCurrentFolderName("Trashed Notes");
         notes = await moreNotes({
           archived: false,
           favorite: false,
@@ -52,7 +50,7 @@ const FolderView = () => {
           page: 1,
         });
       } else if (folderid) {
-        notes = await getFolderNotes(folderid, 1);
+        notes = await getFolderNotes(folderid, 1, searchText);
       }
 
       if (notes) {
@@ -61,7 +59,7 @@ const FolderView = () => {
     };
 
     fetchNotes();
-  }, [location.pathname, folderid]);
+  }, [location.pathname, folderid, searchText, noteid]);
 
   useEffect(() => {
     if (noteid) {
@@ -103,7 +101,7 @@ const FolderView = () => {
         page: nextPage,
       });
     } else if (folderid) {
-      newNotes = await getFolderNotes(folderid, nextPage);
+      newNotes = await getFolderNotes(folderid, nextPage, searchText);
     }
 
     if (newNotes) {
@@ -125,34 +123,34 @@ const FolderView = () => {
           </div>
         ) : (
           folderNotes?.map((item) => {
-            if (item.title.toLowerCase().includes(searchText.toLowerCase())) {
-              const isHighlighted = currentNote === item.id;
+            const isHighlighted = currentNote === item.id;
 
-              const date = new Date(Date.parse(item.createdAt));
-              return (
-                <div
-                  onClick={() => handleNotesOnClick(item.id)}
-                  key={item.id}
-                  className={`${
-                    isHighlighted
-                      ? "bg-[#FFFFFF1A]"
-                      : "bg-[#FFFFFF08] hover:bg-[#FFFFFF1A]"
-                  } pt-5 p-4 flex flex-col gap-3 cursor-pointer`}
-                >
-                  <h1 className="text-white text-lg font-semibold">
-                    {item.title.length > 30
-                      ? item.title.slice(0, 30) + "..."
-                      : item.title}
-                  </h1>
-                  <div className="flex gap-2 justify-between">
-                    <p className="text-[#FFFFFF66]">{`${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</p>
-                    <p className="text-[#FFFFFF99]">
-                      {item.preview.slice(0, 20) + "....."}
-                    </p>
-                  </div>
+            const date = new Date(Date.parse(item.createdAt));
+            return (
+              <div
+                onClick={() => handleNotesOnClick(item.id)}
+                key={item.id}
+                className={`${
+                  isHighlighted
+                    ? "bg-[#FFFFFF1A]"
+                    : "bg-[#FFFFFF08] hover:bg-[#FFFFFF1A]"
+                } pt-5 p-4 flex flex-col gap-3 cursor-pointer`}
+              >
+                <h1 className="text-white text-lg font-semibold">
+                  {item.title.length > 30
+                    ? item.title.slice(0, 30) + "..."
+                    : item.title}
+                </h1>
+                <div className="flex gap-2 justify-between">
+                  <p className="text-[#FFFFFF66]">
+                    {date.toLocaleDateString("en-GB")}
+                  </p>
+                  <p className="text-[#FFFFFF99]">
+                    {item.preview.slice(0, 20) + "....."}
+                  </p>
                 </div>
-              );
-            }
+              </div>
+            );
           })
         )}
       </div>

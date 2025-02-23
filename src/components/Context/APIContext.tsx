@@ -77,7 +77,28 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getFolderNotes = async (folderId: string, page: number) => {
+  const renameFolder = async (folderId: string, newFolderName: string) => {
+    setFoldersLoading(true);
+    try {
+      await AxiosApi.patch(`/folders/${folderId}`, { name: newFolderName });
+      setFolders((prevFolders) =>
+        prevFolders.map((folder) =>
+          folder.id === folderId ? { ...folder, name: newFolderName } : folder
+        )
+      );
+      return { id: folderId, name: newFolderName };
+    } catch (error) {
+      toast.error("Failed to rename folder.");
+    } finally {
+      setFoldersLoading(false);
+    }
+  };
+
+  const getFolderNotes = async (
+    folderId: string,
+    page?: number,
+    searchText?: string
+  ) => {
     setNotesLoading(true);
     try {
       const response = await AxiosApi.get("/notes", {
@@ -88,6 +109,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           folderId: folderId,
           page: page,
           limit: 10,
+          search: searchText,
         },
       });
       const notesData: NotesPreview[] = response.data.notes;
@@ -214,6 +236,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         search,
         searchText,
         addNewFolder,
+        renameFolder,
         getFolderNotes,
         getSelectedNote,
         createNewNote,
