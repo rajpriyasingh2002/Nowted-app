@@ -11,12 +11,15 @@ const FoldersComponent = () => {
     setCurrentFolderName,
     addNewFolder,
     deleteFolder,
+    renameFolder,
   } = useApi();
   const navigate = useNavigate();
   const { folderid } = useParams();
   const [folderButton, setFolderButton] = useState(false);
   const [newFolder, setNewFolder] = useState("New Folder");
   const [currentFolder, setCurrentFolder] = useState<string>(folderid || "");
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState("");
 
   useEffect(() => {
     if (folders.length > 0) {
@@ -62,6 +65,26 @@ const FoldersComponent = () => {
     }
   }
 
+  function onDoubleClickHandler(folder: Folder) {
+    setEditingFolderId(folder.id);
+    setEditingFolderName(folder.name);
+  }
+
+  async function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (editingFolderId) {
+      const renamedFolder = await renameFolder(
+        editingFolderId,
+        editingFolderName
+      );
+      if (renamedFolder) {
+        setCurrentFolderName(editingFolderName);
+        navigate(`/folders/${editingFolderId}/notes`);
+        setEditingFolderId(null);
+      }
+    }
+  }
+
   return (
     <div className="flex-1 flex-col gap-2">
       <div className="flex pl-4 pr-4 justify-between items-center">
@@ -102,36 +125,48 @@ const FoldersComponent = () => {
                 }`}
                 onClick={() => handleFoldersButton(item)}
               >
-                <div className="flex items-center justify-between pl-4 pr-4 pt-2 pb-2">
-                  {isHighlighted ? (
-                    <>
-                      <button className="cursor-pointer">
-                        <div className="flex gap-4">
-                          <img
-                            src="/public/assets/Open-Folder-Icon.svg"
-                            alt="folder"
-                          />
-                          <h1 className="text-white">{item.name}</h1>
-                        </div>
-                      </button>
-                    </>
+                <div className="flex items-center justify-between pl-4 pr-4 pt-2 pb-2 cursor-pointer">
+                  {editingFolderId === item.id ? (
+                    <form onSubmit={handleRenameSubmit} className="flex gap-4">
+                      <img src="/public/assets/Folder-Icon.svg" alt="folder" />
+                      <input
+                        type="text"
+                        className="text-white bg-transparent outline-none appearance-none border-b border-[#FFFFFF99]"
+                        value={editingFolderName}
+                        onChange={(e) => setEditingFolderName(e.target.value)}
+                        autoFocus
+                      />
+                    </form>
                   ) : (
-                    <>
-                      <div className="flex gap-4">
-                        <img
-                          src="/public/assets/Folder-Icon.svg"
-                          alt="folder"
-                        />
-                        <h1 className="text-[#FFFFFF99]">{item.name}</h1>
-                      </div>
-                    </>
+                    <div
+                      className="flex gap-4"
+                      onDoubleClick={() => onDoubleClickHandler(item)}
+                    >
+                      <img
+                        src={
+                          isHighlighted
+                            ? "/public/assets/Open-Folder-Icon.svg"
+                            : "/public/assets/Folder-Icon.svg"
+                        }
+                        alt="folder"
+                      />
+                      <h1
+                        className={
+                          isHighlighted ? "text-white" : "text-[#FFFFFF99]"
+                        }
+                      >
+                        {item.name.length > 40
+                          ? item.name.slice(0, 40) + "..."
+                          : item.name}
+                      </h1>
+                    </div>
                   )}
-                  <button
+                  <img
                     className="cursor-pointer"
                     onClick={() => onFolderDeleteHandler(item.id)}
-                  >
-                    <img src="/public/assets/Trash-Icon.svg" alt="..." />
-                  </button>
+                    src="/public/assets/Trash-Icon.svg"
+                    alt="..."
+                  />
                 </div>
               </button>
             );

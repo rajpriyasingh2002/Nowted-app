@@ -53,7 +53,8 @@ export interface ApiContextType {
   addNewFolder: (folderName: string) => Promise<Folder | undefined>;
   getFolderNotes: (
     folderId: string,
-    page: number
+    page?: number,
+    searchText?: string
   ) => Promise<NotesPreview[] | undefined>;
   getSelectedNote: (noteId: string) => Promise<Note | undefined>;
   createNewNote: (newCreatedNote: {
@@ -89,4 +90,14 @@ export interface ApiContextType {
   currentFolderName: string;
   setCurrentFolderName: React.Dispatch<React.SetStateAction<string>>;
   deleteFolder: (folderId: string) => Promise<Folder | undefined>;
+  renameFolder: (
+    folderId: string,
+    newFolderName: string
+  ) => Promise<
+    | {
+        id: string;
+        name: string;
+      }
+    | undefined
+  >;
 }
